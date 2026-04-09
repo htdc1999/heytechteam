@@ -42,8 +42,13 @@ export default function HomeDashboardClient({
     if (saved) {
       try {
         const parsedLayout = JSON.parse(saved);
-        const activeLayout = DEFAULT_LAYOUT.filter(x => parsedLayout.includes(x)).concat(DEFAULT_LAYOUT.filter(x => !parsedLayout.includes(x)));
-        setOrder(activeLayout);
+        if (Array.isArray(parsedLayout)) {
+           // We MUST iterate over the parsedLayout first to maintain the saved sequence order!
+           const activeLayout = parsedLayout
+             .filter(x => DEFAULT_LAYOUT.includes(x))
+             .concat(DEFAULT_LAYOUT.filter(x => !parsedLayout.includes(x)));
+           setOrder(activeLayout);
+        }
       } catch (e) {}
     }
     setTimeout(() => { isMounted.current = true; }, 100);
