@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { addGbpDocument, editGbpDocument, deleteGbpDocument, updateGbpFocusKeyword } from "@/app/actions";
+import { addGbpDocument, editGbpDocument, deleteGbpDocument, updateGbpFocusKeyword, updateGbpPostsScheduledUntil } from "@/app/actions";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import styles from "./GbpLinkSection.module.css";
 import Link from "next/link";
@@ -13,13 +13,17 @@ type GbpDocument = {
   link: string;
 };
 
-export default function GbpLinkSection({ clientId, type, initialDocs, focusKeyword }: { clientId: string, type: "POSTS" | "OPTIMIZATIONS", initialDocs: GbpDocument[], focusKeyword?: string | null }) {
+export default function GbpLinkSection({ clientId, type, initialDocs, focusKeyword, gbpPostsScheduledUntil }: { clientId: string, type: "POSTS" | "OPTIMIZATIONS", initialDocs: GbpDocument[], focusKeyword?: string | null, gbpPostsScheduledUntil?: Date | string | null }) {
   const [isAdding, setIsAdding] = useState(false);
   const [isSettingKeyword, setIsSettingKeyword] = useState(false);
+  const [isSettingDate, setIsSettingDate] = useState(false);
   
   const [linkStr, setLinkStr] = useState("");
   const [titleStr, setTitleStr] = useState("");
   const [keywordStr, setKeywordStr] = useState(focusKeyword || "");
+
+  const scheduledDate = gbpPostsScheduledUntil ? new Date(gbpPostsScheduledUntil) : null;
+  const [tempDateStr, setTempDateStr] = useState(scheduledDate ? scheduledDate.toISOString().split('T')[0] : "");
 
   const [editingDoc, setEditingDoc] = useState<GbpDocument | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -43,6 +47,17 @@ export default function GbpLinkSection({ clientId, type, initialDocs, focusKeywo
     setIsPending(true);
     try {
       await updateGbpFocusKeyword(clientId, keywordStr);
+    } catch (err) {
+      console.warn(err);
+    }
+    window.location.reload();
+  };
+
+  const handleSaveDate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPending(true);
+    try {
+      await updateGbpPostsScheduledUntil(clientId, tempDateStr || null);
     } catch (err) {
       console.warn(err);
     }
@@ -81,21 +96,64 @@ export default function GbpLinkSection({ clientId, type, initialDocs, focusKeywo
       <div className={styles.header}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <h2>{displayTitle}</h2>
-          {type === "POSTS" && focusKeyword && (
-            <span className={styles.keywordDisplay}>Focus Keyword: <strong>{focusKeyword}</strong></span>
+          {type === "POSTS" && (focusKeyword || scheduledDate) && (
+            <div className={styles.keywordDisplay}>
+              {focusKeyword && <span>Focus Keyword: <strong>{focusKeyword}</strong></span>}
+              {scheduledDate && (
+                 <span className={styles.dateSubtext}>
+                   Posts Scheduled Up to <strong>{scheduledDate.toLocaleDateString()}</strong>
+                 </span>
+              )}
+            </div>
           )}
         </div>
         <div className={styles.headerActions}>
           {type === "POSTS" && (
-             <button onClick={() => setIsSettingKeyword(!isSettingKeyword)} className="btn btn-secondary" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem" }}>
-               Focus Keyword
-             </button>
+             <>
+               <button onClick={() => setIsSettingDate(!isSettingDate)} className="btn btn-secondary" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem", backgroundColor: "#8b5cf6" }}>
+                 Set Schedule Date
+               </button>
+               <button onClick={() => setIsSettingKeyword(!isSettingKeyword)} className="btn btn-secondary" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem" }}>
+                 Focus Keyword
+               </button>
+             </>
           )}
           <button onClick={() => setIsAdding(!isAdding)} className={`btn btn-primary ${styles.addBtn}`}>
              <Plus size={16} /> Add Link
           </button>
         </div>
       </div>
+
+      {isSettingDate && type === "POSTS" && (
+        <div className={styles.inlineFormBox}>
+          <div className={styles.formHeader}>
+            <h3>Set Posts Scheduled Until Date</h3>
+            <button onClick={() => setIsSettingDate(false)} className={styles.iconButton}><X size={18} /></button>
+          </div>
+          <form onSubmit={handleSaveDate} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label>Select Date</label>
+              <input type="date" value={tempDateStr} onChange={e => setTempDateStr(e.target.value)} required />
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+               <button type="submit" disabled={isPending} className="btn btn-success">
+                 {isPending ? "Saving..." : "Save Date"}
+               </button>
+               {scheduledDate && (
+                  <button type="button" disabled={isPending} onClick={async () => {
+                     if(confirm("Clear scheduled date?")) {
+                       setIsPending(true);
+                       await updateGbpPostsScheduledUntil(clientId, null);
+                       window.location.reload();
+                     }
+                  }} className="btn btn-danger">
+                    Clear Date
+                  </button>
+               )}
+            </div>
+          </form>
+        </div>
+      )}
 
       {isSettingKeyword && type === "POSTS" && (
         <div className={styles.inlineFormBox}>

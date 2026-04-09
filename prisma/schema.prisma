@@ -61,6 +61,8 @@ model Client {
   id        String   @id @default(cuid())
   name      String
   gbpFocusKeyword String?
+  clientNotes     String?
+  gbpPostsScheduledUntil DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   changeLogs ChangeLog[]

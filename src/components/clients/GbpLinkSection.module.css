@@ -189,17 +189,27 @@
 }
 
 .keywordDisplay {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   font-size: 0.85rem;
   color: var(--primary);
-  opacity: 0.9;
+  opacity: 0.95;
   background-color: rgba(59, 130, 246, 0.1);
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
 }
 
 .keywordDisplay strong {
   font-weight: 700;
   color: var(--text-color);
+}
+
+.dateSubtext {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.8rem;
+  margin-top: 2px;
 }
 
 .headerActions {

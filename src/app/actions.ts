@@ -359,3 +359,47 @@ export async function updateGbpFocusKeyword(clientId: string, keyword: string) {
     }
   });
 }
+
+export async function updateClientNotes(clientId: string, notes: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  await prisma.client.update({
+    where: { id: clientId },
+    data: { clientNotes: notes }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "CLIENT",
+      entityId: clientId,
+      details: JSON.stringify({ name: "Updated Client Notes" }),
+      userId: session.user.id,
+    }
+  });
+}
+
+export async function updateGbpPostsScheduledUntil(clientId: string, dateStr: string | null) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // Since dateStr is YYYY-MM-DD from standard HTML input, we convert and append time offset manually to map cleanly. Or we just trust new Date.
+  // We'll append T12:00:00Z to ensure timezone math doesn't push it back 1 day locally.
+  const parsedDate = dateStr ? new Date(`${dateStr}T12:00:00Z`) : null;
+
+  await prisma.client.update({
+    where: { id: clientId },
+    data: { gbpPostsScheduledUntil: parsedDate }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "CLIENT",
+      entityId: clientId,
+      details: JSON.stringify({ name: `Scheduled GBP Posts until: ${dateStr ? dateStr : 'None'}` }),
+      userId: session.user.id,
+    }
+  });
+}

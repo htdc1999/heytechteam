@@ -16,7 +16,13 @@ export default async function GbpPostsPage(props: { params: Promise<{ id: string
 
   return (
     <div>
-      <GbpLinkSection clientId={params.id} type="POSTS" initialDocs={docs} focusKeyword={client?.gbpFocusKeyword} />
+      <GbpLinkSection 
+        clientId={params.id} 
+        type="POSTS" 
+        initialDocs={docs} 
+        focusKeyword={client?.gbpFocusKeyword} 
+        gbpPostsScheduledUntil={client?.gbpPostsScheduledUntil}
+      />
     </div>
   );
 }
