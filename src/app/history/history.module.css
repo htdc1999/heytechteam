@@ -1,0 +1,42 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.table th, .table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.table th {
+  background-color: var(--bg-color);
+  font-weight: 600;
+}
+
+.action {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.add {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+.delete {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: var(--danger);
+}

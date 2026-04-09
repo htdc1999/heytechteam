@@ -1,0 +1,58 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.addForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-color);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border-top: 4px solid var(--secondary);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.cardLink {
+  flex: 1;
+}
+
+.cardLink h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-color);
+}
