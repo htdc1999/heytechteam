@@ -62,8 +62,8 @@ model Client {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
   changeLogs ChangeLog[]
+  mediaFiles MediaFile[]
 }
 
 model ChangeLog {
@@ -77,4 +77,16 @@ model ChangeLog {
   
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   client      Client?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
+}
+
+model MediaFile {
+  id          String   @id @default(cuid())
+  type        String
+  link        String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }

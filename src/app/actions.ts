@@ -52,3 +52,74 @@ export async function deleteClient(id: string) {
   revalidatePath("/clients");
   revalidatePath("/history");
 }
+
+export async function addMediaFile(clientId: string, data: { type: string, link: string, description: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const media = await prisma.mediaFile.create({
+    data: {
+      ...data,
+      clientId,
+    }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "ADD",
+      entity: "MEDIA_FILE",
+      entityId: media.id,
+      details: JSON.stringify({ name: `Added [${data.type}] - ${data.description}` }),
+      userId: session.user.id,
+    }
+  });
+
+  revalidatePath(`/clients/${clientId}/media`);
+  revalidatePath("/history");
+}
+
+export async function editMediaFile(clientId: string, mediaId: string, data: { type: string, link: string, description: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  await prisma.mediaFile.update({
+    where: { id: mediaId },
+    data,
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "MEDIA_FILE",
+      entityId: mediaId,
+      details: JSON.stringify({ name: `Edited [${data.type}] - ${data.description}` }),
+      userId: session.user.id,
+    }
+  });
+
+  revalidatePath(`/clients/${clientId}/media`);
+  revalidatePath("/history");
+}
+
+export async function deleteMediaFile(clientId: string, mediaId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const media = await prisma.mediaFile.findUnique({ where: { id: mediaId } });
+  if (!media) throw new Error("Media file not found");
+
+  await prisma.mediaFile.delete({ where: { id: mediaId } });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "DELETE",
+      entity: "MEDIA_FILE",
+      entityId: mediaId,
+      details: JSON.stringify({ name: `Deleted [${media.type}] - ${media.description}` }),
+      userId: session.user.id,
+    }
+  });
+
+  revalidatePath(`/clients/${clientId}/media`);
+  revalidatePath("/history");
+}
