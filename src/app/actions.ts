@@ -455,3 +455,17 @@ export async function editGlobalGbpDocument(docId: string, doc: { title: string,
 export async function deleteGlobalGbpDocument(docId: string) {
   await prisma.globalGbpDocument.delete({ where: { id: docId } });
 }
+
+export async function addGlobalEmailTemplate(doc: { title: string, link: string }) {
+  await prisma.globalEmailTemplate.create({ data: doc });
+}
+export async function deleteGlobalEmailTemplate(docId: string) {
+  await prisma.globalEmailTemplate.delete({ where: { id: docId } });
+}
+
+export async function addGlobalGoogleAdsClient(doc: { title: string, link: string }) {
+  await prisma.globalGoogleAdsClient.create({ data: doc });
+}
+export async function deleteGlobalGoogleAdsClient(docId: string) {
+  await prisma.globalGoogleAdsClient.delete({ where: { id: docId } });
+}

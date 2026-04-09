@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { 
-  saveUserLayout, 
   updateGlobalNote, 
   addGlobalTask, 
   toggleGlobalTask, 
   deleteGlobalTask,
-  addGlobalGbpDocument,
-  deleteGlobalGbpDocument
+  addGlobalGbpDocument, deleteGlobalGbpDocument,
+  addGlobalEmailTemplate, deleteGlobalEmailTemplate,
+  addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient
 } from "@/app/actions";
 import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle } from "lucide-react";
 import styles from "./HomeDashboardClient.module.css";
 
-const DEFAULT_LAYOUT = ["notes", "gbp-sheets", "gbp-attention", "audit-attention", "one-off-tasks"];
+const DEFAULT_LAYOUT = ["notes", "gbp-sheets", "email-templates", "google-ads", "alerts", "one-off-tasks"];
 
 export default function HomeDashboardClient({ 
   userName,
@@ -24,26 +24,33 @@ export default function HomeDashboardClient({
   initialGlobalNote,
   initialGlobalTasks,
   initialGlobalGbpDocs,
-  savedLayout
+  initialGlobalEmailDocs,
+  initialGlobalAdsDocs
 }: any) {
   
-  // Drag and Drop Grid Layout State
-  const initialLayout = savedLayout ? JSON.parse(savedLayout) : DEFAULT_LAYOUT;
-  // Fallback to ensure no new widgets go missing if layout was saved previously
-  const activeLayout = DEFAULT_LAYOUT.filter(x => initialLayout.includes(x)).concat(DEFAULT_LAYOUT.filter(x => !initialLayout.includes(x)));
-  
-  const [order, setOrder] = useState<string[]>(activeLayout);
+  // Drag and Drop Grid Layout State using LocalStorage for persistence
+  const [order, setOrder] = useState<string[]>(DEFAULT_LAYOUT);
   const dragItemNode = useRef<any>(null);
   const dragItemIndex = useRef<number | null>(null);
-
   const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("heyTechTeamLayout");
+    if (saved) {
+      try {
+        const parsedLayout = JSON.parse(saved);
+        const activeLayout = DEFAULT_LAYOUT.filter(x => parsedLayout.includes(x)).concat(DEFAULT_LAYOUT.filter(x => !parsedLayout.includes(x)));
+        setOrder(activeLayout);
+      } catch (e) {}
+    }
+  }, []);
 
   // Notes State
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notesStr, setNotesStr] = useState(initialGlobalNote);
 
-  // GBP Docs State
-  const [isAddingDoc, setIsAddingDoc] = useState(false);
+  // Link Docs States
+  const [addingDocType, setAddingDocType] = useState<string | null>(null);
   const [docTitle, setDocTitle] = useState("");
   const [docLink, setDocLink] = useState("");
 
@@ -55,7 +62,6 @@ export default function HomeDashboardClient({
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     dragItemNode.current = e.target;
     dragItemIndex.current = index;
-    // Need timeout so the drag phantom image builds before modifying the source block opacity
     setTimeout(() => { if (dragItemNode.current) dragItemNode.current.style.opacity = "0.4"; }, 0);
   };
 
@@ -66,21 +72,19 @@ export default function HomeDashboardClient({
         const newOrder = [...oldOrder];
         const item = newOrder.splice(draggedItemIndex, 1)[0];
         newOrder.splice(index, 0, item);
-        dragItemIndex.current = index; // Update index to the new position
+        dragItemIndex.current = index;
         return newOrder;
       });
     }
   };
 
-  const handleDragEnd = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
     if (dragItemNode.current) {
       dragItemNode.current.style.opacity = "1";
     }
     dragItemNode.current = null;
     dragItemIndex.current = null;
-    try {
-      await saveUserLayout(JSON.stringify(order));
-    } catch (err) { console.warn(err); }
+    localStorage.setItem("heyTechTeamLayout", JSON.stringify(order));
   };
 
   // --- WIDGET RENDERERS ---
@@ -131,51 +135,60 @@ export default function HomeDashboardClient({
     </div>
   );
 
-  const renderGbpMasterSheets = () => (
+  const renderGenericDocsWidget = (
+    widgetId: string, 
+    title: string, 
+    list: any[], 
+    addFn: any, 
+    delFn: any
+  ) => (
     <div className={styles.widgetCard}>
       <div className={styles.widgetHeader}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="handle">
            <GripVertical size={16} className={styles.dragIcon} />
-           <h3>GBP Master Sheets</h3>
+           <h3>{title}</h3>
         </div>
-        <button onClick={() => setIsAddingDoc(!isAddingDoc)} className="btn btn-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
-           <Plus size={14} style={{ marginRight: '4px' }}/> Add Sheet
+        <button onClick={() => setAddingDocType(addingDocType === widgetId ? null : widgetId)} className="btn btn-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
+           <Plus size={14} style={{ marginRight: '4px' }}/> Add Item
         </button>
       </div>
 
-      {isAddingDoc && (
+      {addingDocType === widgetId && (
         <div className={styles.inlineForm}>
-          <input type="text" placeholder="Sheet Title" value={docTitle} onChange={e=>setDocTitle(e.target.value)} className={styles.inputField} />
+          <input type="text" placeholder="Title/Name" value={docTitle} onChange={e=>setDocTitle(e.target.value)} className={styles.inputField} />
           <input type="url" placeholder="https://docs.google.com/..." value={docLink} onChange={e=>setDocLink(e.target.value)} className={styles.inputField} />
-          <button onClick={async () => {
-             if(!docTitle || !docLink) return;
-             setIsPending(true);
-             await addGlobalGbpDocument({ title: docTitle, link: docLink });
-             window.location.reload();
-          }} disabled={isPending} className="btn btn-success" style={{ alignSelf: 'flex-start' }}>Save Link</button>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button onClick={async () => {
+               if(!docTitle || !docLink) return;
+               setIsPending(true);
+               await addFn({ title: docTitle, link: docLink });
+               window.location.reload();
+            }} disabled={isPending} className="btn btn-success">Save Link</button>
+            <button onClick={() => setAddingDocType(null)} disabled={isPending} className="btn btn-secondary">Cancel</button>
+          </div>
         </div>
       )}
 
       <div className={styles.tableWrapper}>
         <table className={styles.table}>
           <tbody>
-            {initialGlobalGbpDocs.map((doc: any) => (
+            {list.map((doc: any) => (
               <tr key={doc.id}>
                 <td style={{ fontWeight: 600 }}>{doc.title}</td>
-                <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Sheet</Link></td>
+                <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
                 <td style={{ textAlign: 'right' }}>
                   <button onClick={async () => {
-                    if(confirm("Remove this master spreadsheet link?")) {
+                    if(confirm("Remove this link?")) {
                       setIsPending(true);
-                      await deleteGlobalGbpDocument(doc.id);
+                      await delFn(doc.id);
                       window.location.reload();
                     }
                   }} className={styles.iconBtnError}><Trash2 size={16}/></button>
                 </td>
               </tr>
             ))}
-            {initialGlobalGbpDocs.length === 0 && (
-              <tr><td colSpan={3} style={{ fontStyle: 'italic', opacity: 0.5 }}>No master sheets linked yet.</td></tr>
+            {list.length === 0 && (
+              <tr><td colSpan={3} style={{ fontStyle: 'italic', opacity: 0.5 }}>No links mapped yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -183,20 +196,15 @@ export default function HomeDashboardClient({
     </div>
   );
 
-  const renderWarningList = (id: string, title: string, list: any[], warnText: string) => (
-    <div className={styles.widgetCard} style={{ borderLeft: list.length > 0 ? '4px solid var(--danger)' : '4px solid var(--success)' }}>
-      <div className={styles.widgetHeader}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="handle">
-           <GripVertical size={16} className={styles.dragIcon} />
-           <h3 style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              {list.length > 0 && <AlertTriangle size={18} color="var(--danger)" />}
-              {title}
-           </h3>
-        </div>
-      </div>
-      <div className={styles.widgetBody}>
+  const renderWarningSubList = (title: string, list: any[], warnText: string) => (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0, color: 'var(--text-color)' }}>
+         {list.length > 0 && <AlertTriangle size={18} color="var(--danger)" />}
+         {title}
+      </h4>
+      <div className={styles.warningListWrapper} style={{ borderLeft: list.length > 0 ? '4px solid var(--danger)' : '4px solid var(--success)', paddingLeft: '1rem' }}>
         {list.length === 0 ? (
-           <p style={{ color: 'var(--success)', fontWeight: 500, margin: 0 }}>All clients are healthy!</p>
+           <p style={{ color: 'var(--success)', fontWeight: 500, margin: 0 }}>All Healthy!</p>
         ) : (
            <div className={styles.warningList}>
              {list.map(c => (
@@ -206,6 +214,23 @@ export default function HomeDashboardClient({
              ))}
            </div>
         )}
+      </div>
+    </div>
+  );
+
+  const renderCombinedAlerts = () => (
+    <div className={styles.widgetCard}>
+      <div className={styles.widgetHeader}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="handle">
+           <GripVertical size={16} className={styles.dragIcon} />
+           <h3>Client Action Alerts</h3>
+        </div>
+      </div>
+      <div className={styles.widgetBody}>
+         <div className={styles.combinedAlertGrid}>
+            {renderWarningSubList("Clients Requiring GBP Posts", clientsNeedingGbpPosts, "< 2 Weeks Scheduled")}
+            {renderWarningSubList("Clients Requiring Audit Attention", clientsNeedingAuditAttention, "> 60 Days Aging")}
+         </div>
       </div>
     </div>
   );
@@ -235,7 +260,7 @@ export default function HomeDashboardClient({
       )}
 
       <div className={styles.taskContainer}>
-         {initialGlobalTasks.length === 0 && <span style={{ opacity: 0.5, fontStyle: 'italic', display: 'block', padding: '1rem 0' }}>No overarching team tasks initialized.</span>}
+         {initialGlobalTasks.length === 0 && <span style={{ opacity: 0.5, fontStyle: 'italic', display: 'block', padding: '1rem 0' }}>No tasks initialized.</span>}
          {initialGlobalTasks.map((t: any) => (
             <div key={t.id} className={styles.taskRow}>
                <label className={styles.taskLabel}>
@@ -268,9 +293,10 @@ export default function HomeDashboardClient({
 
   const blockMap: Record<string, () => React.ReactNode> = {
     "notes": renderTechTeamNotes,
-    "gbp-sheets": renderGbpMasterSheets,
-    "gbp-attention": () => renderWarningList("gbp-attention", "Clients Requiring GBP Posts", clientsNeedingGbpPosts, "< 2 Weeks Scheduled"),
-    "audit-attention": () => renderWarningList("audit-attention", "Clients Requiring Audit Attention", clientsNeedingAuditAttention, "> 60 Days Aging"),
+    "gbp-sheets": () => renderGenericDocsWidget("gbp-sheets", "GBP Master Sheets", initialGlobalGbpDocs, addGlobalGbpDocument, deleteGlobalGbpDocument),
+    "email-templates": () => renderGenericDocsWidget("email-templates", "Email Templates", initialGlobalEmailDocs, addGlobalEmailTemplate, deleteGlobalEmailTemplate),
+    "google-ads": () => renderGenericDocsWidget("google-ads", "Google Ads Clients", initialGlobalAdsDocs, addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient),
+    "alerts": renderCombinedAlerts,
     "one-off-tasks": renderOneOffTasks
   };
 

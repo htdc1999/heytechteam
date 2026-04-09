@@ -64,6 +64,8 @@ export default async function Home() {
   const globalNoteRecord = await prisma.globalNote.findUnique({ where: { id: "global" } });
   const globalTasks = await prisma.globalTask.findMany({ orderBy: { createdAt: "asc" } });
   const globalGbpDocs = await prisma.globalGbpDocument.findMany({ orderBy: { createdAt: "asc" } });
+  const globalEmailDocs = await prisma.globalEmailTemplate.findMany({ orderBy: { createdAt: "asc" } });
+  const globalAdsDocs = await prisma.globalGoogleAdsClient.findMany({ orderBy: { createdAt: "asc" } });
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
@@ -75,7 +77,8 @@ export default async function Home() {
         initialGlobalNote={globalNoteRecord?.content || ""}
         initialGlobalTasks={globalTasks}
         initialGlobalGbpDocs={globalGbpDocs}
-        savedLayout={layoutPreference}
+        initialGlobalEmailDocs={globalEmailDocs}
+        initialGlobalAdsDocs={globalAdsDocs}
       />
     </div>
   );

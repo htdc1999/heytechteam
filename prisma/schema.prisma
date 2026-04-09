@@ -155,3 +155,19 @@ model GlobalGbpDocument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model GlobalEmailTemplate {
+  id        String   @id @default(cuid())
+  title     String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GlobalGoogleAdsClient {
+  id        String   @id @default(cuid())
+  title     String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
