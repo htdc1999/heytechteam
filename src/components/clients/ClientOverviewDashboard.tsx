@@ -88,25 +88,30 @@ export default function ClientOverviewDashboard({
         <div className={`${styles.card} ${styles.notesCard}`}>
           <div className={styles.cardHeader}>
              <h3>Client Notes</h3>
-             {!isEditingNotes ? (
+             {!isEditingNotes && (
                <button onClick={() => setIsEditingNotes(true)} className={styles.iconButton}><Edit2 size={16} /></button>
-             ) : (
-               <div style={{ display: 'flex', gap: '0.5rem' }}>
-                 <button onClick={handleSaveNotes} className={styles.iconButtonSuccess}><Save size={16} /></button>
-                 <button onClick={() => { setNotesStr(""); }} className={styles.iconButtonError} title="Clear Notes"><Trash2 size={16} /></button>
-               </div>
              )}
           </div>
           
           <div className={styles.cardBody}>
             {isEditingNotes ? (
-              <textarea 
-                value={notesStr} 
-                onChange={e => setNotesStr(e.target.value)} 
-                className={styles.notesTextarea}
-                placeholder="Enter important client notes, contact info, or budgets here..."
-                autoFocus
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+                <textarea 
+                  value={notesStr} 
+                  onChange={e => setNotesStr(e.target.value)} 
+                  className={styles.notesTextarea}
+                  placeholder="Enter important client notes, contact info, or budgets here..."
+                  autoFocus
+                />
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <button onClick={handleSaveNotes} disabled={isPending} className="btn btn-success">
+                    {isPending ? "Saving..." : "Save Notes"}
+                  </button>
+                  <button onClick={() => { setIsEditingNotes(false); setNotesStr(client.clientNotes || ""); }} disabled={isPending} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                </div>
+              </div>
             ) : (
               <p className={styles.notesDisplay}>
                 {client.clientNotes ? client.clientNotes : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No notes have been saved yet.</span>}
