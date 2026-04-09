@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { addMediaFile, deleteMediaFile, editMediaFile } from "@/app/actions";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import styles from "./MediaFilesSection.module.css";
@@ -21,8 +20,7 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
   const [descriptionStr, setDescriptionStr] = useState("");
 
   const [editingFile, setEditingFile] = useState<MediaFile | null>(null);
-
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
 
   const mediaTypes = ["Images", "Videos", "PDF", "Downloadable", "Other"];
 
@@ -31,37 +29,43 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
     setDropdownOpen(false);
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!addingType) return;
-    
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       await addMediaFile(clientId, { type: addingType, link: linkStr, description: descriptionStr });
-      setAddingType(null);
-      setLinkStr("");
-      setDescriptionStr("");
-    });
+    } catch (err) {
+      console.warn(err);
+    }
+    window.location.reload();
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingFile) return;
-
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       await editMediaFile(clientId, editingFile.id, { 
         type: editingFile.type, 
         link: editingFile.link, 
         description: editingFile.description 
       });
-      setEditingFile(null);
-    });
+    } catch (err) {
+      console.warn(err);
+    }
+    window.location.reload();
   };
 
-  const handleDelete = (mediaId: string) => {
+  const handleDelete = async (mediaId: string) => {
     if (confirm("Are you sure you want to delete this media file?")) {
-      startTransition(async () => {
+      setIsPending(true);
+      try {
          await deleteMediaFile(clientId, mediaId);
-      });
+      } catch (err) {
+         console.warn(err);
+      }
+      window.location.reload();
     }
   };
 
