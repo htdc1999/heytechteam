@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { addGbpDocument, editGbpDocument, deleteGbpDocument } from "@/app/actions";
+import { addGbpDocument, editGbpDocument, deleteGbpDocument, updateGbpFocusKeyword } from "@/app/actions";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import styles from "./GbpLinkSection.module.css";
 import Link from "next/link";
@@ -13,10 +13,13 @@ type GbpDocument = {
   link: string;
 };
 
-export default function GbpLinkSection({ clientId, type, initialDocs }: { clientId: string, type: "POSTS" | "OPTIMIZATIONS", initialDocs: GbpDocument[] }) {
+export default function GbpLinkSection({ clientId, type, initialDocs, focusKeyword }: { clientId: string, type: "POSTS" | "OPTIMIZATIONS", initialDocs: GbpDocument[], focusKeyword?: string | null }) {
   const [isAdding, setIsAdding] = useState(false);
+  const [isSettingKeyword, setIsSettingKeyword] = useState(false);
+  
   const [linkStr, setLinkStr] = useState("");
   const [titleStr, setTitleStr] = useState("");
+  const [keywordStr, setKeywordStr] = useState(focusKeyword || "");
 
   const [editingDoc, setEditingDoc] = useState<GbpDocument | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -29,6 +32,17 @@ export default function GbpLinkSection({ clientId, type, initialDocs }: { client
     setIsPending(true);
     try {
       await addGbpDocument(clientId, { type, title: titleStr, link: linkStr });
+    } catch (err) {
+      console.warn(err);
+    }
+    window.location.reload();
+  };
+
+  const handleSaveKeyword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPending(true);
+    try {
+      await updateGbpFocusKeyword(clientId, keywordStr);
     } catch (err) {
       console.warn(err);
     }
@@ -65,11 +79,41 @@ export default function GbpLinkSection({ clientId, type, initialDocs }: { client
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>{displayTitle}</h2>
-        <button onClick={() => setIsAdding(!isAdding)} className={`btn btn-primary ${styles.addBtn}`}>
-           <Plus size={16} /> Add Link
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <h2>{displayTitle}</h2>
+          {type === "POSTS" && focusKeyword && (
+            <span className={styles.keywordDisplay}>Focus Keyword: <strong>{focusKeyword}</strong></span>
+          )}
+        </div>
+        <div className={styles.headerActions}>
+          {type === "POSTS" && (
+             <button onClick={() => setIsSettingKeyword(!isSettingKeyword)} className="btn btn-secondary" style={{ fontSize: "0.85rem", padding: "0.4rem 0.8rem" }}>
+               Focus Keyword
+             </button>
+          )}
+          <button onClick={() => setIsAdding(!isAdding)} className={`btn btn-primary ${styles.addBtn}`}>
+             <Plus size={16} /> Add Link
+          </button>
+        </div>
       </div>
+
+      {isSettingKeyword && type === "POSTS" && (
+        <div className={styles.inlineFormBox}>
+          <div className={styles.formHeader}>
+            <h3>Set Focus Keyword</h3>
+            <button onClick={() => setIsSettingKeyword(false)} className={styles.iconButton}><X size={18} /></button>
+          </div>
+          <form onSubmit={handleSaveKeyword} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label>Focus Keyword</label>
+              <input type="text" value={keywordStr} onChange={e => setKeywordStr(e.target.value)} required placeholder="e.g. Best Plumber in Toronto" />
+            </div>
+            <button type="submit" disabled={isPending} className="btn btn-success" style={{ alignSelf: "flex-start" }}>
+              {isPending ? "Saving..." : "Save Keyword"}
+            </button>
+          </form>
+        </div>
+      )}
 
       {isAdding && (
         <div className={styles.inlineFormBox}>

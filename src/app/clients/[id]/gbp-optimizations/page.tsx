@@ -4,6 +4,8 @@ import GbpLinkSection from "@/components/clients/GbpLinkSection";
 export default async function GbpOptimizationsPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
 
+  const client = await prisma.client.findUnique({ where: { id: params.id } });
+
   const docs = await prisma.gbpDocument.findMany({
     where: { 
       clientId: params.id,
@@ -14,7 +16,7 @@ export default async function GbpOptimizationsPage(props: { params: Promise<{ id
 
   return (
     <div>
-      <GbpLinkSection clientId={params.id} type="OPTIMIZATIONS" initialDocs={docs} />
+      <GbpLinkSection clientId={params.id} type="OPTIMIZATIONS" initialDocs={docs} focusKeyword={client?.gbpFocusKeyword} />
     </div>
   );
 }

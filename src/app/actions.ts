@@ -339,3 +339,23 @@ export async function deleteGbpDocument(clientId: string, documentId: string) {
     }
   });
 }
+
+export async function updateGbpFocusKeyword(clientId: string, keyword: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  await prisma.client.update({
+    where: { id: clientId },
+    data: { gbpFocusKeyword: keyword }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "CLIENT",
+      entityId: clientId,
+      details: JSON.stringify({ name: `Updated GBP Focus Keyword to: "${keyword}"` }),
+      userId: session.user.id,
+    }
+  });
+}
