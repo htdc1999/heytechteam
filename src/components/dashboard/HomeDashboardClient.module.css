@@ -1,0 +1,303 @@
+.dashboardWrapper {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2rem;
+  min-height: calc(100vh - 120px);
+  align-items: start;
+}
+
+@media (max-width: 950px) {
+  .dashboardWrapper {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .clientListScroller {
+    max-height: 250px;
+  }
+}
+
+/* LEFT COLUMN */
+.sidebarColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: sticky;
+  top: 2rem;
+}
+
+.welcomeBox {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.welcomeBox h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  color: var(--primary);
+  line-height: 1.2;
+}
+
+.welcomeBox p {
+  margin: 0.5rem 0 0 0;
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 1rem;
+}
+
+.clientListScroller {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.clientListScroller::-webkit-scrollbar {
+  width: 6px;
+}
+.clientListScroller::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+.clientListScroller::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.clientListItem {
+  padding: 1rem 1.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  color: var(--text-color);
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+}
+
+.clientListItem:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--primary);
+  transform: translateX(4px);
+}
+
+/* RIGHT COLUMN - DND */
+.widgetColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.draggableWrapper {
+  cursor: grab;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.draggableWrapper:active {
+  cursor: grabbing;
+}
+
+.widgetCard {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.widgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: rgba(0,0,0,0.02);
+  border-bottom: 1px solid var(--border-color);
+}
+
+[data-theme='dark'] .widgetHeader {
+  background-color: rgba(255,255,255,0.02);
+}
+
+.widgetHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.dragIcon {
+  color: var(--text-color);
+  opacity: 0.3;
+  margin-right: 0.25rem;
+}
+
+.draggableWrapper:hover .dragIcon {
+  opacity: 0.8;
+}
+
+.widgetBody {
+  padding: 1.5rem;
+}
+
+/* Note UI */
+.textArea {
+  width: 100%;
+  min-height: 150px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--primary);
+  padding: 1rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.textDisplay {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* Links & Tasks UI */
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.externalLink {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.externalLink:hover {
+  text-decoration: underline;
+}
+
+.inlineForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1px dashed var(--border-color);
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+.inlineTaskForm {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-bottom: 1px dashed var(--border-color);
+  background-color: rgba(59, 130, 246, 0.02);
+}
+
+.inputField {
+  padding: 0.6rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  flex: 1;
+}
+
+.taskContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.taskRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s;
+}
+
+.taskRow:hover {
+  background-color: rgba(0,0,0,0.01);
+}
+
+[data-theme='dark'] .taskRow:hover {
+  background-color: rgba(255,255,255,0.02);
+}
+
+.taskRow:last-child {
+  border-bottom: none;
+}
+
+.taskLabel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+/* Warnings */
+.warningList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.warningPill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--border-radius);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.warningPill:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  transform: translateX(4px);
+}
+
+.warningPill span {
+  font-size: 0.85rem;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+/* Icons */
+.iconBtn, .iconBtnError {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.5;
+  transition: all 0.2s;
+  padding: 0.3rem;
+  border-radius: 4px;
+}
+
+.iconBtn:hover {
+  opacity: 1;
+  background-color: rgba(0,0,0,0.05);
+}
+
+.iconBtnError:hover {
+  color: var(--danger);
+  opacity: 1;
+  background-color: rgba(239, 68, 68, 0.1);
+}

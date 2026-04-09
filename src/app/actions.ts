@@ -403,3 +403,55 @@ export async function updateGbpPostsScheduledUntil(clientId: string, dateStr: st
     }
   });
 }
+
+// --- Global Widget Actions ---
+
+export async function saveUserLayout(layoutStr: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { dashboardLayout: layoutStr }
+  });
+}
+
+export async function updateGlobalNote(content: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  await prisma.globalNote.upsert({
+    where: { id: "global" },
+    update: { content },
+    create: { id: "global", content }
+  });
+}
+
+export async function addGlobalTask(taskName: string) {
+  await prisma.globalTask.create({ data: { taskName } });
+}
+
+export async function toggleGlobalTask(taskId: string, isCompleted: boolean) {
+  await prisma.globalTask.update({
+    where: { id: taskId },
+    data: { isCompleted }
+  });
+}
+
+export async function deleteGlobalTask(taskId: string) {
+  await prisma.globalTask.delete({ where: { id: taskId } });
+}
+
+export async function addGlobalGbpDocument(doc: { title: string, link: string }) {
+  await prisma.globalGbpDocument.create({ data: doc });
+}
+
+export async function editGlobalGbpDocument(docId: string, doc: { title: string, link: string }) {
+  await prisma.globalGbpDocument.update({
+    where: { id: docId },
+    data: doc
+  });
+}
+
+export async function deleteGlobalGbpDocument(docId: string) {
+  await prisma.globalGbpDocument.delete({ where: { id: docId } });
+}
