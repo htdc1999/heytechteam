@@ -64,6 +64,7 @@ model Client {
   updatedAt DateTime @updatedAt
   changeLogs ChangeLog[]
   mediaFiles MediaFile[]
+  onboardingTasks OnboardingTask[]
 }
 
 model ChangeLog {
@@ -84,6 +85,17 @@ model MediaFile {
   type        String
   link        String
   description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model OnboardingTask {
+  id          String   @id @default(cuid())
+  taskName    String
+  isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

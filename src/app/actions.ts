@@ -123,3 +123,60 @@ export async function deleteMediaFile(clientId: string, mediaId: string) {
   revalidatePath(`/clients/${clientId}/media`);
   revalidatePath("/history");
 }
+
+export async function seedDefaultTasks(clientId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const defaultTasks = [
+    "Confirm GSC Access & Tracking Works",
+    "Confirm Google Analytics Access & Tracking Works",
+    "Confirm Sitemap has been submitted to GSC"
+  ];
+
+  for (const taskName of defaultTasks) {
+    await prisma.onboardingTask.create({
+      data: { taskName, clientId }
+    });
+  }
+}
+
+export async function toggleOnboardingTask(clientId: string, taskId: string, isCompleted: boolean) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const task = await prisma.onboardingTask.update({
+    where: { id: taskId },
+    data: { isCompleted }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "ONBOARDING_TASK",
+      entityId: taskId,
+      details: JSON.stringify({ name: `Marked "${task.taskName}" as ${isCompleted ? "Complete" : "Incomplete"}` }),
+      userId: session.user.id,
+    }
+  });
+}
+
+export async function deleteOnboardingTask(clientId: string, taskId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const task = await prisma.onboardingTask.findUnique({ where: { id: taskId } });
+  if (!task) return;
+
+  await prisma.onboardingTask.delete({ where: { id: taskId } });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "DELETE",
+      entity: "ONBOARDING_TASK",
+      entityId: taskId,
+      details: JSON.stringify({ name: `Deleted task: "${task.taskName}"` }),
+      userId: session.user.id,
+    }
+  });
+}
