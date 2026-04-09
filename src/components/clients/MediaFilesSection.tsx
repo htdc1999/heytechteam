@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { addMediaFile, deleteMediaFile, editMediaFile } from "@/app/actions";
 import { Plus, Edit, Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import styles from "./MediaFilesSection.module.css";
 import Link from "next/link";
 
@@ -23,6 +24,7 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
 
   const [editingFile, setEditingFile] = useState<MediaFile | null>(null);
 
+  const router = useRouter();
   const mediaTypes = ["Images", "Videos", "PDF", "Downloadable", "Other"];
 
   const handleSelectType = (type: string) => {
@@ -34,29 +36,49 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
     e.preventDefault();
     if (!addingType) return;
     setIsSubmitting(true);
-    await addMediaFile(clientId, { type: addingType, link: linkStr, description: descriptionStr });
-    setIsSubmitting(false);
-    setAddingType(null);
-    setLinkStr("");
-    setDescriptionStr("");
+    try {
+      await addMediaFile(clientId, { type: addingType, link: linkStr, description: descriptionStr });
+      setAddingType(null);
+      setLinkStr("");
+      setDescriptionStr("");
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+      alert("An error occurred while saving.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingFile) return;
     setIsSubmitting(true);
-    await editMediaFile(clientId, editingFile.id, { 
-      type: editingFile.type, 
-      link: editingFile.link, 
-      description: editingFile.description 
-    });
-    setIsSubmitting(false);
-    setEditingFile(null);
+    try {
+      await editMediaFile(clientId, editingFile.id, { 
+        type: editingFile.type, 
+        link: editingFile.link, 
+        description: editingFile.description 
+      });
+      setEditingFile(null);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+      alert("An error occurred while updating.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDelete = async (mediaId: string) => {
     if (confirm("Are you sure you want to delete this media file?")) {
-      await deleteMediaFile(clientId, mediaId);
+      try {
+        await deleteMediaFile(clientId, mediaId);
+        router.refresh();
+      } catch (e) {
+        console.error(e);
+        alert("An error occurred while deleting.");
+      }
     }
   };
 
