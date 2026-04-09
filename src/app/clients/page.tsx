@@ -4,7 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import styles from "./clients.module.css";
-import { addClient, deleteClient } from "../actions";
+import { addClient } from "../actions";
+import DeleteClientButton from "@/components/clients/DeleteClientButton";
 
 export default async function ClientsPage() {
   const session = await getServerSession(authOptions);
@@ -36,12 +37,7 @@ export default async function ClientsPage() {
               <Link href={`/clients/${client.id}`} className={styles.cardLink}>
                 <h2>{client.name}</h2>
               </Link>
-              <form action={async () => {
-                "use server";
-                await deleteClient(client.id);
-              }}>
-                <button type="submit" className="btn btn-danger">Delete</button>
-              </form>
+              <DeleteClientButton id={client.id} />
             </div>
           ))}
         </div>
