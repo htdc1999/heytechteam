@@ -15,7 +15,7 @@ export default async function ClientsPage() {
   }
 
   const clients = await prisma.client.findMany({
-    orderBy: { createdAt: "desc" }
+    orderBy: { name: "asc" }
   });
 
   return (

@@ -32,7 +32,7 @@ export default async function Home() {
 
   // Fetch Clients and Pre-Compute Filters
   const clients = await prisma.client.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { name: "asc" },
     include: {
       auditTasks: true
     }
