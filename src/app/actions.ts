@@ -131,7 +131,14 @@ export async function seedDefaultTasks(clientId: string) {
   const defaultTasks = [
     "Confirm GSC Access & Tracking Works",
     "Confirm Google Analytics Access & Tracking Works",
-    "Confirm Sitemap has been submitted to GSC"
+    "Confirm Sitemap has been submitted to GSC",
+    "Confirm Website Access & Permission level",
+    "Complete GBP Profile Optimizations",
+    "Write GBP Profile Posts",
+    "Add Client To BrightLocal",
+    "Submit Brightlocal Citation Builder Campaign",
+    "Begin Scheduling GBP Posts On Brightlocal",
+    "Add Client To HeyTony Audit Tool"
   ];
 
   for (const taskName of defaultTasks) {
