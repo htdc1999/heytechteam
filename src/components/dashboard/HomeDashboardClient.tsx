@@ -34,6 +34,9 @@ export default function HomeDashboardClient({
   const dragItemIndex = useRef<number | null>(null);
   const [isPending, setIsPending] = useState(false);
 
+  // Tracks if the component has mounted to prevent wiping localstorage on load
+  const isMounted = useRef(false);
+
   useEffect(() => {
     const saved = localStorage.getItem("heyTechTeamLayout");
     if (saved) {
@@ -43,7 +46,16 @@ export default function HomeDashboardClient({
         setOrder(activeLayout);
       } catch (e) {}
     }
+    // Set mounted flag after initial setup
+    setTimeout(() => { isMounted.current = true; }, 100);
   }, []);
+
+  // Native React logic mapping cleanly: Save automatically any time the order changes after mount!
+  useEffect(() => {
+     if (isMounted.current) {
+        localStorage.setItem("heyTechTeamLayout", JSON.stringify(order));
+     }
+  }, [order]);
 
   // Notes State
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -84,7 +96,6 @@ export default function HomeDashboardClient({
     }
     dragItemNode.current = null;
     dragItemIndex.current = null;
-    localStorage.setItem("heyTechTeamLayout", JSON.stringify(order));
   };
 
   // --- WIDGET RENDERERS ---
