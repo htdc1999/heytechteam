@@ -1,0 +1,74 @@
+.menuContainer {
+  position: relative;
+  z-index: 10;
+}
+
+.menuTrigger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:global(.client-card-hover-group):hover .card-menu-trigger {
+  opacity: 0.5;
+}
+
+.menuTrigger:hover {
+  opacity: 1 !important;
+  background-color: rgba(0,0,0,0.05);
+}
+
+[data-theme='dark'] .menuTrigger:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  padding: 0.5rem;
+  min-width: 180px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.deleteOption {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--danger);
+  font-weight: 500;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.deleteOption:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.deleteOption:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

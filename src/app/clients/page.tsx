@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import styles from "./clients.module.css";
 import { addClient } from "../actions";
-import DeleteClientButton from "@/components/clients/DeleteClientButton";
+import ClientCardMenu from "@/components/clients/ClientCardMenu";
 
 export default async function ClientsPage() {
   const session = await getServerSession(authOptions);
@@ -33,11 +33,11 @@ export default async function ClientsPage() {
       ) : (
         <div className={styles.grid}>
           {clients.map(client => (
-            <div key={client.id} className={styles.card}>
+            <div key={client.id} className={`${styles.card} client-card-hover-group`}>
               <Link href={`/clients/${client.id}`} className={styles.cardLink}>
                 <h2>{client.name}</h2>
               </Link>
-              <DeleteClientButton id={client.id} />
+              <ClientCardMenu id={client.id} />
             </div>
           ))}
         </div>
