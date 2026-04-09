@@ -66,6 +66,7 @@ model Client {
   mediaFiles MediaFile[]
   onboardingTasks OnboardingTask[]
   auditTasks AuditTask[]
+  gbpDocuments GbpDocument[]
 }
 
 model ChangeLog {
@@ -113,4 +114,16 @@ model AuditTask {
   
   clientId     String
   client       Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model GbpDocument {
+  id        String   @id @default(cuid())
+  type      String   // "POSTS" | "OPTIMIZATIONS"
+  title     String
+  link      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }

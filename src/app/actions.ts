@@ -277,3 +277,65 @@ export async function deleteAuditTask(clientId: string, taskId: string) {
     }
   });
 }
+
+export async function addGbpDocument(clientId: string, data: { type: string, title: string, link: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const doc = await prisma.gbpDocument.create({
+    data: {
+      ...data,
+      clientId,
+    }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "ADD",
+      entity: "GBP_DOCUMENT",
+      entityId: doc.id,
+      details: JSON.stringify({ name: `Attached [${data.type}] tracker - ${data.title}` }),
+      userId: session.user.id,
+    }
+  });
+}
+
+export async function editGbpDocument(clientId: string, documentId: string, data: { title: string, link: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const doc = await prisma.gbpDocument.update({
+    where: { id: documentId },
+    data,
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "GBP_DOCUMENT",
+      entityId: documentId,
+      details: JSON.stringify({ name: `Edited [${doc.type}] tracker - ${data.title}` }),
+      userId: session.user.id,
+    }
+  });
+}
+
+export async function deleteGbpDocument(clientId: string, documentId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const doc = await prisma.gbpDocument.findUnique({ where: { id: documentId } });
+  if (!doc) return;
+
+  await prisma.gbpDocument.delete({ where: { id: documentId } });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "DELETE",
+      entity: "GBP_DOCUMENT",
+      entityId: documentId,
+      details: JSON.stringify({ name: `Removed [${doc.type}] tracker - ${doc.title}` }),
+      userId: session.user.id,
+    }
+  });
+}

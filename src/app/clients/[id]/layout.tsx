@@ -24,7 +24,7 @@ export default async function ClientLayout(props: {
 
   const links = [
     { href: `/clients/${client.id}`, label: "Overview" },
-    { href: `/clients/${client.id}/gbp-opt`, label: "GBP Optimizations" },
+    { href: `/clients/${client.id}/gbp-optimizations`, label: "GBP Optimizations" },
     { href: `/clients/${client.id}/gbp-posts`, label: "GBP Posts" },
     { href: `/clients/${client.id}/onboarding`, label: "Onboarding Checklist" },
     { href: `/clients/${client.id}/audit`, label: "Audit Tool Tasks" },
