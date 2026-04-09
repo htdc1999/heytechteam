@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { toggleOnboardingTask, deleteOnboardingTask, seedDefaultTasks } from "@/app/actions";
+import { toggleOnboardingTask, deleteOnboardingTask, seedDefaultTasks, deleteMultipleOnboardingTasks } from "@/app/actions";
 import { Trash2 } from "lucide-react";
 import styles from "./OnboardingSection.module.css";
 
@@ -46,6 +46,25 @@ export default function OnboardingSection({ clientId, initialTasks }: { clientId
     }
   };
 
+  const handleNoGBP = async () => {
+    if (confirm("Are you sure you want to remove all GBP-related tasks? This action cannot be undone.")) {
+      setIsPending(true);
+      try {
+        const gbpTasks = [
+          "Complete GBP Profile Optimizations",
+          "Write GBP Profile Posts",
+          "Add Client To BrightLocal",
+          "Submit Brightlocal Citation Builder Campaign",
+          "Begin Scheduling GBP Posts On Brightlocal"
+        ];
+        await deleteMultipleOnboardingTasks(clientId, gbpTasks);
+      } catch (e) {
+        console.warn(e);
+      }
+      window.location.reload();
+    }
+  };
+
   if (initialTasks.length === 0) {
     return <div className={styles.loading}>Initializing your default checklist...</div>;
   }
@@ -54,6 +73,9 @@ export default function OnboardingSection({ clientId, initialTasks }: { clientId
     <div className={styles.container} style={{ opacity: isPending ? 0.5 : 1, pointerEvents: isPending ? 'none' : 'auto' }}>
       <div className={styles.header}>
         <h2>Onboarding Checklist</h2>
+        <button onClick={handleNoGBP} className="btn btn-warning" style={{ fontSize: "0.800rem", padding: "0.4rem 0.8rem", fontWeight: 600 }}>
+          No GBP
+        </button>
       </div>
 
       <div className={styles.tableWrapper}>

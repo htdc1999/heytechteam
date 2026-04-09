@@ -187,3 +187,33 @@ export async function deleteOnboardingTask(clientId: string, taskId: string) {
     }
   });
 }
+
+export async function deleteMultipleOnboardingTasks(clientId: string, taskNames: string[]) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const tasksToDelete = await prisma.onboardingTask.findMany({
+    where: { 
+      clientId,
+      taskName: { in: taskNames }
+    }
+  });
+
+  if (tasksToDelete.length === 0) return;
+
+  await prisma.onboardingTask.deleteMany({
+    where: {
+      id: { in: tasksToDelete.map(t => t.id) }
+    }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "DELETE",
+      entity: "ONBOARDING_TASK",
+      entityId: clientId,
+      details: JSON.stringify({ name: `Deleted ${tasksToDelete.length} GBP-related onboarding tasks` }),
+      userId: session.user.id,
+    }
+  });
+}
