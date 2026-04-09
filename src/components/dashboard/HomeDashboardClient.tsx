@@ -46,16 +46,8 @@ export default function HomeDashboardClient({
         setOrder(activeLayout);
       } catch (e) {}
     }
-    // Set mounted flag after initial setup
     setTimeout(() => { isMounted.current = true; }, 100);
   }, []);
-
-  // Native React logic mapping cleanly: Save automatically any time the order changes after mount!
-  useEffect(() => {
-     if (isMounted.current) {
-        localStorage.setItem("heyTechTeamLayout", JSON.stringify(order));
-     }
-  }, [order]);
 
   // Notes State
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -85,6 +77,11 @@ export default function HomeDashboardClient({
         const item = newOrder.splice(draggedItemIndex, 1)[0];
         newOrder.splice(index, 0, item);
         dragItemIndex.current = index;
+        
+        if (typeof window !== "undefined") {
+           localStorage.setItem("heyTechTeamLayout", JSON.stringify(newOrder));
+        }
+        
         return newOrder;
       });
     }
