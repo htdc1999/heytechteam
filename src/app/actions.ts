@@ -217,3 +217,63 @@ export async function deleteMultipleOnboardingTasks(clientId: string, taskNames:
     }
   });
 }
+
+export async function seedAuditTasks(clientId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const defaultTasks = [
+    "Fix Broken Links / 404 Errors",
+    "Create Internal Links To Orphaned Pages",
+    "Fix Pages With No H1 Tag",
+    "Fix Pages With Multiple H1 Tags",
+    "Write & Add Meta Descriptions To Pages That Don't Have them",
+    "Fix Pages With Duplicate Meta Descriptions"
+  ];
+
+  for (const taskName of defaultTasks) {
+    await prisma.auditTask.create({
+      data: { taskName, clientId }
+    });
+  }
+}
+
+export async function markAuditTaskWorkedOn(clientId: string, taskId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const task = await prisma.auditTask.update({
+    where: { id: taskId },
+    data: { lastWorkedOn: new Date() }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "AUDIT_TASK",
+      entityId: taskId,
+      details: JSON.stringify({ name: `Marked "${task.taskName}" as worked on` }),
+      userId: session.user.id,
+    }
+  });
+}
+
+export async function deleteAuditTask(clientId: string, taskId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const task = await prisma.auditTask.findUnique({ where: { id: taskId } });
+  if (!task) return;
+
+  await prisma.auditTask.delete({ where: { id: taskId } });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "DELETE",
+      entity: "AUDIT_TASK",
+      entityId: taskId,
+      details: JSON.stringify({ name: `Deleted audit task: "${task.taskName}"` }),
+      userId: session.user.id,
+    }
+  });
+}

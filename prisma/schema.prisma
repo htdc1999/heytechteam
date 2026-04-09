@@ -65,6 +65,7 @@ model Client {
   changeLogs ChangeLog[]
   mediaFiles MediaFile[]
   onboardingTasks OnboardingTask[]
+  auditTasks AuditTask[]
 }
 
 model ChangeLog {
@@ -101,4 +102,15 @@ model OnboardingTask {
   
   clientId    String
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model AuditTask {
+  id           String    @id @default(cuid())
+  taskName     String
+  lastWorkedOn DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  clientId     String
+  client       Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
 }
