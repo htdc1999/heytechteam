@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { addMediaFile, deleteMediaFile, editMediaFile } from "@/app/actions";
 import { Plus, Edit, Trash2, X } from "lucide-react";
-import { useRouter } from "next/navigation";
 import styles from "./MediaFilesSection.module.css";
 import Link from "next/link";
 
@@ -20,11 +19,11 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
   
   const [linkStr, setLinkStr] = useState("");
   const [descriptionStr, setDescriptionStr] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [editingFile, setEditingFile] = useState<MediaFile | null>(null);
 
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
   const mediaTypes = ["Images", "Videos", "PDF", "Downloadable", "Other"];
 
   const handleSelectType = (type: string) => {
@@ -32,53 +31,37 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
     setDropdownOpen(false);
   };
 
-  const handleAddSubmit = async (e: React.FormEvent) => {
+  const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!addingType) return;
-    setIsSubmitting(true);
-    try {
+    
+    startTransition(async () => {
       await addMediaFile(clientId, { type: addingType, link: linkStr, description: descriptionStr });
       setAddingType(null);
       setLinkStr("");
       setDescriptionStr("");
-      router.refresh();
-    } catch (e) {
-      console.error(e);
-      alert("An error occurred while saving.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
-  const handleEditSubmit = async (e: React.FormEvent) => {
+  const handleEditSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingFile) return;
-    setIsSubmitting(true);
-    try {
+
+    startTransition(async () => {
       await editMediaFile(clientId, editingFile.id, { 
         type: editingFile.type, 
         link: editingFile.link, 
         description: editingFile.description 
       });
       setEditingFile(null);
-      router.refresh();
-    } catch (e) {
-      console.error(e);
-      alert("An error occurred while updating.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
-  const handleDelete = async (mediaId: string) => {
+  const handleDelete = (mediaId: string) => {
     if (confirm("Are you sure you want to delete this media file?")) {
-      try {
-        await deleteMediaFile(clientId, mediaId);
-        router.refresh();
-      } catch (e) {
-        console.error(e);
-        alert("An error occurred while deleting.");
-      }
+      startTransition(async () => {
+         await deleteMediaFile(clientId, mediaId);
+      });
     }
   };
 
@@ -117,8 +100,8 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
               <label>Description</label>
               <textarea value={descriptionStr} onChange={e => setDescriptionStr(e.target.value)} required placeholder="Briefly describe what's inside and where to use it..." rows={2} />
             </div>
-            <button type="submit" disabled={isSubmitting} className="btn btn-success" style={{ alignSelf: "flex-start" }}>
-              {isSubmitting ? "Saving..." : "Add to Client"}
+            <button type="submit" disabled={isPending} className="btn btn-success" style={{ alignSelf: "flex-start" }}>
+              {isPending ? "Saving..." : "Add to Client"}
             </button>
           </form>
         </div>
@@ -180,7 +163,7 @@ export default function MediaFilesSection({ clientId, initialFiles }: { clientId
                 <textarea value={editingFile.description} onChange={e => setEditingFile({ ...editingFile, description: e.target.value })} required rows={4} />
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                <button type="submit" disabled={isSubmitting} className="btn btn-primary" style={{ flex: 1 }}>Save Changes</button>
+                <button type="submit" disabled={isPending} className="btn btn-primary" style={{ flex: 1 }}>Save Changes</button>
                 <button type="button" onClick={() => setEditingFile(null)} className="btn btn-secondary" style={{ flex: 1 }}>Cancel</button>
               </div>
             </form>
