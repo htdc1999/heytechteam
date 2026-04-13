@@ -428,7 +428,7 @@ export default function HomeDashboardClient({
 
   const blockMap: Record<string, () => React.ReactNode> = {
     "notes": renderTechTeamNotes,
-    "gbp-sheets": () => renderGenericDocsWidget("gbp-sheets", "GBP Master Sheets", initialGlobalGbpDocs, addGlobalGbpDocument, deleteGlobalGbpDocument),
+    "gbp-sheets": () => renderGenericDocsWidget("gbp-sheets", "Important URLS", initialGlobalGbpDocs, addGlobalGbpDocument, deleteGlobalGbpDocument),
     "email-templates": () => renderGenericDocsWidget("email-templates", "Email Templates", initialGlobalEmailDocs, addGlobalEmailTemplate, deleteGlobalEmailTemplate),
     "google-ads": renderGoogleAdsWidget,
     "alerts": renderCombinedAlerts,
