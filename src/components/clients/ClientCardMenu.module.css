@@ -17,7 +17,7 @@
   justify-content: center;
 }
 
-:global(.client-card-hover-group):hover .card-menu-trigger {
+:global(.client-card-hover-group):hover .menuTrigger {
   opacity: 0.5;
 }
 
