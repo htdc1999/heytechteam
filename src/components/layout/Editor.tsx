@@ -2,10 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import styles from "./Editor.module.css";
 
-const ReactQuill = dynamic(() => import("react-quill"), { 
+const ReactQuill = dynamic(() => import("react-quill-new"), { 
   ssr: false, 
   loading: () => <div className={styles.loadingBox}>Loading Editor Engine...</div> 
 });
