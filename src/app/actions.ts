@@ -30,6 +30,15 @@ export async function addClient(formData: FormData) {
   revalidatePath("/history");
 }
 
+export async function getClientSearchList() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return [];
+  return await prisma.client.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" }
+  });
+}
+
 export async function bulkAddClients(textLines: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
