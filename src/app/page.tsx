@@ -85,19 +85,25 @@ export default async function Home() {
     }
     
     let daysDiff = 0;
-    if (highestDate === 0) {
+    if (highestDate === 0 || !c.auditTasks || c.auditTasks.length === 0) {
        daysDiff = Math.floor((now - new Date(c.createdAt).getTime()) / msPerDay);
-    } else {
-       daysDiff = Math.floor((now - highestDate) / msPerDay);
-    }
-    
-    if (daysDiff > 60) {
+       // We add an arbitrary 10,000 day anchor to ensure they aggressively climb to the top of the sorting UI!
        auditAlertsRaw.push({
           id: c.id,
           name: c.name,
-          daysSinceCheck: daysDiff,
-          badgeText: `${daysDiff} days since checked`
+          daysSinceCheck: daysDiff + 10000, 
+          badgeText: `Unchecked since creation (${daysDiff} days)`
        });
+    } else {
+       daysDiff = Math.floor((now - highestDate) / msPerDay);
+       if (daysDiff > 60) {
+          auditAlertsRaw.push({
+             id: c.id,
+             name: c.name,
+             daysSinceCheck: daysDiff,
+             badgeText: `${daysDiff} days since last check`
+          });
+       }
     }
   });
   // Sort from Highest Neglect (800 days) completely cleanly down to Threshold (61 days)
