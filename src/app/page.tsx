@@ -34,7 +34,8 @@ export default async function Home() {
   const clients = await prisma.client.findMany({
     orderBy: { name: "asc" },
     include: {
-      auditTasks: true
+      auditTasks: true,
+      onboardingTasks: true
     }
   });
 
@@ -43,6 +44,12 @@ export default async function Home() {
 
   const gbpAlertsRaw: any[] = [];
   clients.forEach(c => {
+    // Escaping hook: if the client explicitly wiped all GBP requirements from their onboarding checklist, immediately skip!
+    const hasGbpTasks = c.onboardingTasks && c.onboardingTasks.some((t: any) => 
+       t.taskName.includes("GBP") || t.taskName.includes("BrightLocal") || t.taskName.includes("Brightlocal")
+    );
+    if (!hasGbpTasks) return;
+
     let sortValue = 0;
     let badgeText = "";
     
