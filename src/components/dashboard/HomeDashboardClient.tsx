@@ -12,6 +12,7 @@ import {
   addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient
 } from "@/app/actions";
 import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X } from "lucide-react";
+import Editor from "@/components/layout/Editor";
 import styles from "./HomeDashboardClient.module.css";
 
 const DEFAULT_LAYOUT = ["notes", "gbp-sheets", "email-templates", "google-ads", "alerts", "one-off-tasks"];
@@ -121,12 +122,11 @@ export default function HomeDashboardClient({
       <div className={styles.widgetBody}>
         {isEditingNotes ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
-            <textarea 
-              value={notesStr} 
-              onChange={e => setNotesStr(e.target.value)} 
-              className={styles.textArea}
+            <Editor 
+              value={notesStr}
+              onChange={setNotesStr}
               placeholder="Agency-wide internal notes..."
-              autoFocus
+              minHeight="200px"
             />
             <div style={{ display: 'flex', gap: '1rem' }}>
               <button 
@@ -146,9 +146,9 @@ export default function HomeDashboardClient({
             </div>
           </div>
         ) : (
-          <p className={styles.textDisplay}>
-            {notesStr ? notesStr : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No global notes stored...</span>}
-          </p>
+          <div className={styles.textDisplay}>
+            {notesStr ? <div dangerouslySetInnerHTML={{ __html: notesStr }} /> : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No global notes stored...</span>}
+          </div>
         )}
       </div>
     </div>
@@ -233,7 +233,12 @@ export default function HomeDashboardClient({
           <input type="url" placeholder="https://docs.google.com/..." value={docLink} onChange={e=>setDocLink(e.target.value)} className={styles.inputField} />
           <textarea placeholder="Client Names (1 per line)" value={adsClientNames} onChange={e=>setAdsClientNames(e.target.value)} className={styles.textArea} rows={3} />
           <textarea placeholder="Client Emails (1 per line)" value={adsClientEmails} onChange={e=>setAdsClientEmails(e.target.value)} className={styles.textArea} rows={3} />
-          <textarea placeholder="Notes" value={adsNotes} onChange={e=>setAdsNotes(e.target.value)} className={styles.textArea} rows={3} />
+          <Editor 
+            value={adsNotes}
+            onChange={setAdsNotes}
+            placeholder="Global tracking notes..."
+            minHeight="120px"
+          />
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button onClick={async () => {
                if(!docTitle || !docLink) return;
@@ -314,7 +319,7 @@ export default function HomeDashboardClient({
                         <div>
                            <h4 style={{ color: 'var(--secondary)', margin: '0 0 0.5rem 0' }}>Internal Notes</h4>
                            <div className={styles.infoBox} style={{ whiteSpace: 'pre-wrap', minHeight: '80px' }}>
-                              {activeDoc.notes ? activeDoc.notes : <em style={{opacity:0.5}}>No notes attached.</em>}
+                              {activeDoc.notes ? <div dangerouslySetInnerHTML={{ __html: activeDoc.notes }} /> : <em style={{opacity:0.5}}>No notes attached.</em>}
                            </div>
                         </div>
                      </div>

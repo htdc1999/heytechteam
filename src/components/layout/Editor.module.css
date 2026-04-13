@@ -1,0 +1,107 @@
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.loadingBox {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* Custom Quill Theme Overrides to Match The Agency Aesthetics */
+.editorContainer :global(.quill) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.editorContainer :global(.ql-toolbar.ql-snow) {
+  border: 1px solid var(--primary);
+  border-bottom: none;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  background-color: rgba(59, 130, 246, 0.05);
+  font-family: inherit;
+  padding: 8px;
+}
+
+[data-theme='dark'] .editorContainer :global(.ql-toolbar.ql-snow) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.editorContainer :global(.ql-container.ql-snow) {
+  border: 1px solid var(--primary);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+  flex-grow: 1;
+}
+
+.editorContainer :global(.ql-editor) {
+  min-height: inherit;
+  padding: 1rem;
+}
+
+.editorContainer :global(.ql-editor p) {
+  margin-bottom: 0.5rem;
+}
+
+/* SVG Fill Overrides for Dark Mode */
+.editorContainer :global(.ql-snow .ql-stroke) {
+  stroke: var(--text-color);
+}
+.editorContainer :global(.ql-snow .ql-fill) {
+  fill: var(--text-color);
+}
+
+.editorContainer :global(.ql-snow .ql-picker) {
+  color: var(--text-color);
+}
+
+/* Custom Emoji Button Injection */
+.editorContainer :global(.ql-snow .ql-toolbar button.ql-emoji::before) {
+  content: '😀';
+  font-size: 16px;
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.editorContainer :global(.ql-snow .ql-toolbar button:hover), 
+.editorContainer :global(.ql-snow .ql-toolbar button:focus), 
+.editorContainer :global(.ql-snow .ql-toolbar button.ql-active), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label:hover), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label.ql-active), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item:hover), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item.ql-selected) {
+  color: var(--primary);
+}
+
+.editorContainer :global(.ql-snow .ql-toolbar button:hover .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar button:focus .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar button.ql-active .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke), 
+.editorContainer :global(.ql-snow .ql-toolbar button:hover .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar button:focus .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar button.ql-active .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter), 
+.editorContainer :global(.ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter) {
+  stroke: var(--primary);
+}

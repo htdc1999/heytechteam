@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { updateClientNotes, updateGbpPostsScheduledUntil } from "@/app/actions";
 import { Edit2, Save, Trash2, Calendar, AlertTriangle } from "lucide-react";
+import Editor from "@/components/layout/Editor";
 import styles from "./ClientOverviewDashboard.module.css";
 
 export default function ClientOverviewDashboard({ 
@@ -96,12 +97,11 @@ export default function ClientOverviewDashboard({
           <div className={styles.cardBody}>
             {isEditingNotes ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
-                <textarea 
-                  value={notesStr} 
-                  onChange={e => setNotesStr(e.target.value)} 
-                  className={styles.notesTextarea}
+                <Editor 
+                  value={notesStr}
+                  onChange={setNotesStr}
                   placeholder="Enter important client notes, contact info, or budgets here..."
-                  autoFocus
+                  minHeight="200px"
                 />
                 <div style={{ display: 'flex', gap: '1rem' }}>
                   <button onClick={handleSaveNotes} disabled={isPending} className="btn btn-success">
@@ -113,9 +113,9 @@ export default function ClientOverviewDashboard({
                 </div>
               </div>
             ) : (
-              <p className={styles.notesDisplay}>
-                {client.clientNotes ? client.clientNotes : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No notes have been saved yet.</span>}
-              </p>
+              <div className={styles.notesDisplay}>
+                {client.clientNotes ? <div dangerouslySetInnerHTML={{ __html: client.clientNotes }} /> : <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No notes have been saved yet.</span>}
+              </div>
             )}
           </div>
         </div>
