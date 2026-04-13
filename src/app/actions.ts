@@ -216,6 +216,26 @@ export async function toggleOnboardingTask(clientId: string, taskId: string, isC
   });
 }
 
+export async function completeAllOnboardingTasks(clientId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  await prisma.onboardingTask.updateMany({
+    where: { clientId, isCompleted: false },
+    data: { isCompleted: true }
+  });
+
+  await prisma.changeLog.create({
+    data: {
+      action: "UPDATE",
+      entity: "ONBOARDING_TASK",
+      entityId: clientId,
+      details: JSON.stringify({ name: `Marked all onboarding tasks as Complete` }),
+      userId: session.user.id,
+    }
+  });
+}
+
 export async function deleteOnboardingTask(clientId: string, taskId: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
