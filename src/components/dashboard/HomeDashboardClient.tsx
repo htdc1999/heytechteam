@@ -11,7 +11,7 @@ import {
   addGlobalEmailTemplate, deleteGlobalEmailTemplate,
   addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient
 } from "@/app/actions";
-import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle } from "lucide-react";
+import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X } from "lucide-react";
 import styles from "./HomeDashboardClient.module.css";
 
 const DEFAULT_LAYOUT = ["notes", "gbp-sheets", "email-templates", "google-ads", "alerts", "one-off-tasks"];
@@ -62,6 +62,12 @@ export default function HomeDashboardClient({
   const [addingDocType, setAddingDocType] = useState<string | null>(null);
   const [docTitle, setDocTitle] = useState("");
   const [docLink, setDocLink] = useState("");
+
+  // Google Ads Sub-States
+  const [adsClientNames, setAdsClientNames] = useState("");
+  const [adsClientEmails, setAdsClientEmails] = useState("");
+  const [adsNotes, setAdsNotes] = useState("");
+  const [activeInfoDocId, setActiveInfoDocId] = useState<string | null>(null);
 
   // Tasks State
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -209,6 +215,117 @@ export default function HomeDashboardClient({
     </div>
   );
 
+  const renderGoogleAdsWidget = () => (
+    <div className={styles.widgetCard}>
+      <div className={styles.widgetHeader}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="handle">
+           <GripVertical size={16} className={styles.dragIcon} />
+           <h3>Google Ads Clients</h3>
+        </div>
+        <button onClick={() => setAddingDocType(addingDocType === "google-ads" ? null : "google-ads")} className="btn btn-primary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.85rem' }}>
+           <Plus size={14} style={{ marginRight: '4px' }}/> Add Item
+        </button>
+      </div>
+
+      {addingDocType === "google-ads" && (
+        <div className={styles.inlineForm} style={{ flexDirection: 'column', gap: '0.8rem' }}>
+          <input type="text" placeholder="Title/Name (Primary)" value={docTitle} onChange={e=>setDocTitle(e.target.value)} className={styles.inputField} />
+          <input type="url" placeholder="https://docs.google.com/..." value={docLink} onChange={e=>setDocLink(e.target.value)} className={styles.inputField} />
+          <textarea placeholder="Client Names (1 per line)" value={adsClientNames} onChange={e=>setAdsClientNames(e.target.value)} className={styles.textArea} rows={3} />
+          <textarea placeholder="Client Emails (1 per line)" value={adsClientEmails} onChange={e=>setAdsClientEmails(e.target.value)} className={styles.textArea} rows={3} />
+          <textarea placeholder="Notes" value={adsNotes} onChange={e=>setAdsNotes(e.target.value)} className={styles.textArea} rows={3} />
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <button onClick={async () => {
+               if(!docTitle || !docLink) return;
+               setIsPending(true);
+               await addGlobalGoogleAdsClient({ 
+                  title: docTitle, 
+                  link: docLink,
+                  clientNames: adsClientNames || null,
+                  clientEmails: adsClientEmails || null,
+                  notes: adsNotes || null
+               });
+               window.location.reload();
+            }} disabled={isPending} className="btn btn-success">Save Global Ads Client</button>
+            <button onClick={() => setAddingDocType(null)} disabled={isPending} className="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.table}>
+          <tbody>
+            {initialGlobalAdsDocs.map((doc: any) => (
+              <tr key={doc.id}>
+                <td style={{ fontWeight: 600 }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {doc.title}
+                      <button onClick={() => setActiveInfoDocId(doc.id)} className={styles.iconBtn} title="View Details">
+                         <Info size={16} />
+                      </button>
+                   </div>
+                </td>
+                <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
+                <td style={{ textAlign: 'right' }}>
+                  <button onClick={async () => {
+                    if(confirm("Remove this client from the matrix?")) {
+                      setIsPending(true);
+                      await deleteGlobalGoogleAdsClient(doc.id);
+                      window.location.reload();
+                    }
+                  }} className={styles.iconBtnError}><Trash2 size={16}/></button>
+                </td>
+              </tr>
+            ))}
+            {initialGlobalAdsDocs.length === 0 && (
+              <tr><td colSpan={3} style={{ fontStyle: 'italic', opacity: 0.5 }}>No clients mapped yet.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      
+      {/* Dynamic Popover Overlay built cleanly */}
+      {activeInfoDocId && (
+         <div className={styles.modalOverlay} onClick={() => setActiveInfoDocId(null)}>
+            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+               <div className={styles.modalHeader}>
+                  <h3>Tracking Details</h3>
+                  <button onClick={() => setActiveInfoDocId(null)} className={styles.iconBtn}><X size={20}/></button>
+               </div>
+               
+               {initialGlobalAdsDocs.find((x:any) => x.id === activeInfoDocId) && (() => {
+                  const activeDoc = initialGlobalAdsDocs.find((x:any) => x.id === activeInfoDocId)!;
+                  return (
+                     <div className={styles.modalBody}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
+                           <div>
+                              <h4 style={{ color: 'var(--primary)', margin: '0 0 0.5rem 0' }}>Client Names</h4>
+                              <div className={styles.infoBox}>
+                                 {activeDoc.clientNames ? activeDoc.clientNames.split('\n').map((n:string, i:number) => n.trim() && <div key={i}>{n}</div>) : <em style={{opacity:0.5}}>None tracked</em>}
+                              </div>
+                           </div>
+                           <div>
+                              <h4 style={{ color: 'var(--primary)', margin: '0 0 0.5rem 0' }}>Emails</h4>
+                              <div className={styles.infoBox}>
+                                 {activeDoc.clientEmails ? activeDoc.clientEmails.split('\n').map((e:string, i:number) => e.trim() && <div key={i}>{e}</div>) : <em style={{opacity:0.5}}>None tracked</em>}
+                              </div>
+                           </div>
+                        </div>
+                        <div>
+                           <h4 style={{ color: 'var(--secondary)', margin: '0 0 0.5rem 0' }}>Internal Notes</h4>
+                           <div className={styles.infoBox} style={{ whiteSpace: 'pre-wrap', minHeight: '80px' }}>
+                              {activeDoc.notes ? activeDoc.notes : <em style={{opacity:0.5}}>No notes attached.</em>}
+                           </div>
+                        </div>
+                     </div>
+                  );
+               })()}
+            </div>
+         </div>
+      )}
+    </div>
+  );
+
   const renderWarningSubList = (title: string, list: any[], warnText: string) => (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <h4 style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0, color: 'var(--text-color)' }}>
@@ -308,7 +425,7 @@ export default function HomeDashboardClient({
     "notes": renderTechTeamNotes,
     "gbp-sheets": () => renderGenericDocsWidget("gbp-sheets", "GBP Master Sheets", initialGlobalGbpDocs, addGlobalGbpDocument, deleteGlobalGbpDocument),
     "email-templates": () => renderGenericDocsWidget("email-templates", "Email Templates", initialGlobalEmailDocs, addGlobalEmailTemplate, deleteGlobalEmailTemplate),
-    "google-ads": () => renderGenericDocsWidget("google-ads", "Google Ads Clients", initialGlobalAdsDocs, addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient),
+    "google-ads": renderGoogleAdsWidget,
     "alerts": renderCombinedAlerts,
     "one-off-tasks": renderOneOffTasks
   };

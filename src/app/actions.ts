@@ -531,7 +531,7 @@ export async function deleteGlobalEmailTemplate(docId: string) {
   await prisma.globalEmailTemplate.delete({ where: { id: docId } });
 }
 
-export async function addGlobalGoogleAdsClient(doc: { title: string, link: string }) {
+export async function addGlobalGoogleAdsClient(doc: { title: string, link: string, clientNames?: string | null, clientEmails?: string | null, notes?: string | null }) {
   await prisma.globalGoogleAdsClient.create({ data: doc });
 }
 export async function deleteGlobalGoogleAdsClient(docId: string) {

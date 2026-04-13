@@ -165,9 +165,12 @@ model GlobalEmailTemplate {
 }
 
 model GlobalGoogleAdsClient {
-  id        String   @id @default(cuid())
-  title     String
-  link      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  link         String
+  clientNames  String?
+  clientEmails String?
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
