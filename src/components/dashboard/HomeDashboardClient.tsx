@@ -339,7 +339,7 @@ export default function HomeDashboardClient({
            <div className={styles.warningList}>
              {list.map(c => (
                 <Link key={c.id} href={`/clients/${c.id}`} className={styles.warningPill}>
-                   <strong>{c.name}</strong> <span>{warnText}</span>
+                   <strong>{c.name}</strong> <span>{c.badgeText || warnText}</span>
                 </Link>
              ))}
            </div>

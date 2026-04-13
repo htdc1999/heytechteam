@@ -41,24 +41,67 @@ export default async function Home() {
   const now = Date.now();
   const msPerDay = 1000 * 60 * 60 * 24;
 
-  const clientsNeedingGbpPosts = clients.filter(c => {
-    if (!c.gbpPostsScheduledUntil) return true;
-    const targetDate = new Date(c.gbpPostsScheduledUntil).getTime();
-    return ((targetDate - now) / msPerDay) < 14;
+  const gbpAlertsRaw: any[] = [];
+  clients.forEach(c => {
+    let sortValue = 0;
+    let badgeText = "";
+    
+    if (!c.gbpPostsScheduledUntil) {
+       const daysSinceOut = Math.floor((now - new Date(c.createdAt).getTime()) / msPerDay);
+       sortValue = -daysSinceOut; // Sort natively at the top
+       badgeText = `Unscheduled for ${daysSinceOut} days`;
+    } else {
+       const targetDate = new Date(c.gbpPostsScheduledUntil).getTime();
+       const diff = targetDate - now;
+       if (diff < 0) {
+          const daysSinceOut = Math.floor(Math.abs(diff) / msPerDay);
+          sortValue = -daysSinceOut;
+          badgeText = `Unscheduled for ${daysSinceOut} days`;
+       } else {
+          const daysLeft = Math.ceil(diff / msPerDay);
+          if (daysLeft < 14) {
+             sortValue = daysLeft;
+             badgeText = `${daysLeft} days remaining`;
+          } else {
+             return; // Skips injection because it's completely healthy
+          }
+       }
+    }
+    gbpAlertsRaw.push({ id: c.id, name: c.name, sortValue, badgeText });
   });
+  // Sort primarily from Most Overdue (-100) -> Needs Attention (13)
+  const clientsNeedingGbpPosts = gbpAlertsRaw.sort((a, b) => a.sortValue - b.sortValue);
 
-  const clientsNeedingAuditAttention = clients.filter(c => {
-    if (!c.auditTasks || c.auditTasks.length === 0) return true;
+  const auditAlertsRaw: any[] = [];
+  clients.forEach(c => {
     let highestDate = 0;
-    c.auditTasks.forEach(task => {
-      if (task.lastWorkedOn) {
-        const ts = new Date(task.lastWorkedOn).getTime();
-        if (ts > highestDate) highestDate = ts;
-      }
-    });
-    if (highestDate === 0) return true;
-    return ((now - highestDate) / msPerDay) > 60;
+    if (c.auditTasks && c.auditTasks.length > 0) {
+       c.auditTasks.forEach(task => {
+          if (task.lastWorkedOn) {
+             const ts = new Date(task.lastWorkedOn).getTime();
+             if (ts > highestDate) highestDate = ts;
+          }
+       });
+    }
+    
+    let daysDiff = 0;
+    if (highestDate === 0) {
+       daysDiff = Math.floor((now - new Date(c.createdAt).getTime()) / msPerDay);
+    } else {
+       daysDiff = Math.floor((now - highestDate) / msPerDay);
+    }
+    
+    if (daysDiff > 60) {
+       auditAlertsRaw.push({
+          id: c.id,
+          name: c.name,
+          daysSinceCheck: daysDiff,
+          badgeText: `${daysDiff} days since checked`
+       });
+    }
   });
+  // Sort from Highest Neglect (800 days) completely cleanly down to Threshold (61 days)
+  const clientsNeedingAuditAttention = auditAlertsRaw.sort((a, b) => b.daysSinceCheck - a.daysSinceCheck);
 
   // Fetch Global Datasets
   const globalNoteRecord = await prisma.globalNote.findUnique({ where: { id: "global" } });
