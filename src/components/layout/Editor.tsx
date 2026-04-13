@@ -5,15 +5,10 @@ import { useMemo } from "react";
 import "react-quill/dist/quill.snow.css";
 import styles from "./Editor.module.css";
 
-const ReactQuill = dynamic(
-  async () => {
-    const { default: RQ } = await import("react-quill");
-    return function ReactQuillWrapper({ forwardedRef, ...props }: any) {
-      return <RQ ref={forwardedRef} {...props} />;
-    };
-  },
-  { ssr: false, loading: () => <div className={styles.loadingBox}>Loading Editor Engine...</div> }
-);
+const ReactQuill = dynamic(() => import("react-quill"), { 
+  ssr: false, 
+  loading: () => <div className={styles.loadingBox}>Loading Editor Engine...</div> 
+});
 
 interface EditorProps {
   value: string;
