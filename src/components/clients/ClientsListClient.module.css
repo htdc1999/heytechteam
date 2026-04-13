@@ -1,0 +1,165 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.toolbarRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background-color: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.searchBlock {
+  display: flex;
+  align-items: center;
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-color);
+  opacity: 0.5;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.controlsBlock {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.sortSelect {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  min-width: 220px;
+}
+
+.sortSelect:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.inlineForm {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.singleInput {
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  max-width: 200px;
+}
+
+.singleInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.bulkAddBox {
+  background-color: rgba(59, 130, 246, 0.05);
+  border: 1px dashed var(--primary);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-top: -0.5rem;
+}
+
+.bulkAddBox h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.bulkAddBox p {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  opacity: 0.8;
+  color: var(--text-color);
+}
+
+.bulkTextarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.bulkTextarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.cardLink {
+  text-decoration: none;
+  flex-grow: 1;
+}
+
+.card h2 {
+  margin: 0;
+  color: var(--text-color);
+  font-size: 1.25rem;
+}

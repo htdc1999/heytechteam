@@ -30,6 +30,54 @@ export async function addClient(formData: FormData) {
   revalidatePath("/history");
 }
 
+export async function bulkAddClients(textLines: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const lines = textLines.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+  if (lines.length === 0) throw new Error("No valid client names provided");
+
+  const defaultTasks = [
+    "Confirm GSC Access & Tracking Works",
+    "Confirm Google Analytics Access & Tracking Works",
+    "Confirm Sitemap has been submitted to GSC",
+    "Confirm Website Access & Permission level",
+    "Complete GBP Profile Optimizations",
+    "Write GBP Profile Posts",
+    "Add Client To BrightLocal",
+    "Submit Brightlocal Citation Builder Campaign",
+    "Begin Scheduling GBP Posts On Brightlocal",
+    "Add Client To HeyTony Audit Tool"
+  ];
+
+  for (const name of lines) {
+    const client = await prisma.client.create({
+      data: { name },
+    });
+
+    await prisma.changeLog.create({
+      data: {
+        action: "ADD",
+        entity: "CLIENT",
+        entityId: client.id,
+        details: JSON.stringify({ name: `Bulk added client: ${name}` }),
+        userId: session.user.id,
+      },
+    });
+
+    // Seed defaults automatically on spawn per user request
+    const taskPromises = defaultTasks.map(taskName => 
+      prisma.onboardingTask.create({
+        data: { taskName, clientId: client.id }
+      })
+    );
+    await Promise.all(taskPromises);
+  }
+
+  revalidatePath("/clients");
+  revalidatePath("/history");
+}
+
 export async function deleteClient(id: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
