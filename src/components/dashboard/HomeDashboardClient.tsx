@@ -431,7 +431,11 @@ export default function HomeDashboardClient({
     const now = Date.now();
     const recentClients = clients.filter((c: any) => {
       const msSince = now - new Date(c.createdAt).getTime();
-      return msSince <= thirtyDaysMs && msSince >= 0;
+      
+      const hasTasks = c.onboardingTasks && c.onboardingTasks.length > 0;
+      const allCompleted = hasTasks && c.onboardingTasks.every((t: any) => t.isCompleted);
+
+      return msSince <= thirtyDaysMs && msSince >= 0 && !allCompleted;
     }).map((c: any) => {
       const daysAgo = Math.floor((now - new Date(c.createdAt).getTime()) / (1000 * 60 * 60 * 24));
       return { ...c, daysAgo };
