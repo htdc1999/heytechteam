@@ -15,7 +15,7 @@ import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X } from 
 import Editor from "@/components/layout/Editor";
 import styles from "./HomeDashboardClient.module.css";
 
-const DEFAULT_LAYOUT = ["notes", "gbp-sheets", "email-templates", "google-ads", "alerts", "one-off-tasks"];
+const DEFAULT_LAYOUT = ["recently-added", "notes", "gbp-sheets", "email-templates", "google-ads", "alerts", "one-off-tasks"];
 
 export default function HomeDashboardClient({ 
   userName,
@@ -426,13 +426,56 @@ export default function HomeDashboardClient({
     </div>
   );
 
+  const renderRecentlyAddedClients = () => {
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const recentClients = clients.filter((c: any) => {
+      const msSince = now - new Date(c.createdAt).getTime();
+      return msSince <= thirtyDaysMs && msSince >= 0;
+    }).map((c: any) => {
+      const daysAgo = Math.floor((now - new Date(c.createdAt).getTime()) / (1000 * 60 * 60 * 24));
+      return { ...c, daysAgo };
+    }).sort((a: any, b: any) => a.daysAgo - b.daysAgo);
+
+    return (
+      <div className={styles.widgetCard}>
+        <div className={styles.widgetHeader}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="handle">
+             <GripVertical size={16} className={styles.dragIcon} />
+             <h3>Recently Added Clients</h3>
+          </div>
+        </div>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <tbody>
+              {recentClients.map((c: any) => (
+                <tr key={c.id}>
+                  <td style={{ fontWeight: 600 }}>
+                    <Link href={`/clients/${c.id}`} style={{ color: 'var(--primary)', textDecoration: 'none' }}>{c.name}</Link>
+                  </td>
+                  <td style={{ textAlign: 'right', fontSize: '0.9rem', color: 'var(--text-color)', opacity: 0.8 }}>
+                    {c.daysAgo === 0 ? "Added today" : `Added ${c.daysAgo} day${c.daysAgo === 1 ? '' : 's'} ago`}
+                  </td>
+                </tr>
+              ))}
+              {recentClients.length === 0 && (
+                <tr><td colSpan={2} style={{ fontStyle: 'italic', opacity: 0.5 }}>No clients added in the last 30 days.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   const blockMap: Record<string, () => React.ReactNode> = {
     "notes": renderTechTeamNotes,
     "gbp-sheets": () => renderGenericDocsWidget("gbp-sheets", "Important URLS", initialGlobalGbpDocs, addGlobalGbpDocument, deleteGlobalGbpDocument),
     "email-templates": () => renderGenericDocsWidget("email-templates", "Email Templates", initialGlobalEmailDocs, addGlobalEmailTemplate, deleteGlobalEmailTemplate),
     "google-ads": renderGoogleAdsWidget,
     "alerts": renderCombinedAlerts,
-    "one-off-tasks": renderOneOffTasks
+    "one-off-tasks": renderOneOffTasks,
+    "recently-added": renderRecentlyAddedClients
   };
 
   return (
