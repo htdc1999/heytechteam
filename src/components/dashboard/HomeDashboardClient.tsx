@@ -9,7 +9,7 @@ import {
   deleteGlobalTask,
   addGlobalGbpDocument, deleteGlobalGbpDocument,
   addGlobalEmailTemplate, deleteGlobalEmailTemplate,
-  addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient
+  addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient, updateGlobalGoogleAdsClient
 } from "@/app/actions";
 import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X } from "lucide-react";
 import Editor from "@/components/layout/Editor";
@@ -69,6 +69,14 @@ export default function HomeDashboardClient({
   const [adsClientEmails, setAdsClientEmails] = useState("");
   const [adsNotes, setAdsNotes] = useState("");
   const [activeInfoDocId, setActiveInfoDocId] = useState<string | null>(null);
+
+  // Google Ads Edit States
+  const [editingAdsDocId, setEditingAdsDocId] = useState<string | null>(null);
+  const [editAdsTitle, setEditAdsTitle] = useState("");
+  const [editAdsLink, setEditAdsLink] = useState("");
+  const [editAdsClientNames, setEditAdsClientNames] = useState("");
+  const [editAdsClientEmails, setEditAdsClientEmails] = useState("");
+  const [editAdsNotes, setEditAdsNotes] = useState("");
 
   // Tasks State
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -195,7 +203,15 @@ export default function HomeDashboardClient({
               <tr key={doc.id}>
                 <td style={{ fontWeight: 600 }}>{doc.title}</td>
                 <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
-                <td style={{ textAlign: 'right' }}>
+                <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <button onClick={() => {
+                     setEditAdsTitle(doc.title || "");
+                     setEditAdsLink(doc.link || "");
+                     setEditAdsClientNames(doc.clientNames || "");
+                     setEditAdsClientEmails(doc.clientEmails || "");
+                     setEditAdsNotes(doc.notes || "");
+                     setEditingAdsDocId(doc.id);
+                  }} className={styles.iconBtn} title="Edit Client" style={{ marginRight: '8px' }}><Edit2 size={16}/></button>
                   <button onClick={async () => {
                     if(confirm("Remove this link?")) {
                       setIsPending(true);
@@ -325,6 +341,46 @@ export default function HomeDashboardClient({
                      </div>
                   );
                })()}
+            </div>
+         </div>
+      )}
+
+      {/* Dynamic Popover Overlay For EDITING */}
+      {editingAdsDocId && (
+         <div className={styles.modalOverlay} onClick={() => setEditingAdsDocId(null)}>
+            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+               <div className={styles.modalHeader}>
+                  <h3>Edit Google Ads Client</h3>
+                  <button onClick={() => setEditingAdsDocId(null)} className={styles.iconBtn}><X size={20}/></button>
+               </div>
+               
+               <div className={styles.modalBody} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                 <input type="text" placeholder="Title/Name (Primary)" value={editAdsTitle} onChange={e=>setEditAdsTitle(e.target.value)} className={styles.inputField} />
+                 <input type="url" placeholder="https://docs.google.com/..." value={editAdsLink} onChange={e=>setEditAdsLink(e.target.value)} className={styles.inputField} />
+                 <textarea placeholder="Client Names (1 per line)" value={editAdsClientNames} onChange={e=>setEditAdsClientNames(e.target.value)} className={styles.textArea} rows={3} />
+                 <textarea placeholder="Client Emails (1 per line)" value={editAdsClientEmails} onChange={e=>setEditAdsClientEmails(e.target.value)} className={styles.textArea} rows={3} />
+                 <Editor 
+                   value={editAdsNotes}
+                   onChange={setEditAdsNotes}
+                   placeholder="Global tracking notes..."
+                   minHeight="120px"
+                 />
+                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                   <button onClick={async () => {
+                      if(!editAdsTitle || !editAdsLink) return;
+                      setIsPending(true);
+                      await updateGlobalGoogleAdsClient(editingAdsDocId, { 
+                         title: editAdsTitle, 
+                         link: editAdsLink,
+                         clientNames: editAdsClientNames || null,
+                         clientEmails: editAdsClientEmails || null,
+                         notes: editAdsNotes || null
+                      });
+                      window.location.reload();
+                   }} disabled={isPending} className="btn btn-success">Save Edits</button>
+                   <button onClick={() => setEditingAdsDocId(null)} disabled={isPending} className="btn btn-secondary">Cancel</button>
+                 </div>
+               </div>
             </div>
          </div>
       )}
