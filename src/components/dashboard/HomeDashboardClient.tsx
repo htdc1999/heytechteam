@@ -203,15 +203,7 @@ export default function HomeDashboardClient({
               <tr key={doc.id}>
                 <td style={{ fontWeight: 600 }}>{doc.title}</td>
                 <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
-                <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  <button onClick={() => {
-                     setEditAdsTitle(doc.title || "");
-                     setEditAdsLink(doc.link || "");
-                     setEditAdsClientNames(doc.clientNames || "");
-                     setEditAdsClientEmails(doc.clientEmails || "");
-                     setEditAdsNotes(doc.notes || "");
-                     setEditingAdsDocId(doc.id);
-                  }} className={styles.iconBtn} title="Edit Client" style={{ marginRight: '8px' }}><Edit2 size={16}/></button>
+                <td style={{ textAlign: 'right' }}>
                   <button onClick={async () => {
                     if(confirm("Remove this link?")) {
                       setIsPending(true);
@@ -287,7 +279,15 @@ export default function HomeDashboardClient({
                    </div>
                 </td>
                 <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
-                <td style={{ textAlign: 'right' }}>
+                <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <button onClick={() => {
+                     setEditAdsTitle(doc.title || "");
+                     setEditAdsLink(doc.link || "");
+                     setEditAdsClientNames(doc.clientNames || "");
+                     setEditAdsClientEmails(doc.clientEmails || "");
+                     setEditAdsNotes(doc.notes || "");
+                     setEditingAdsDocId(doc.id);
+                  }} className={styles.iconBtn} title="Edit Client" style={{ marginRight: '8px' }}><Edit2 size={16}/></button>
                   <button onClick={async () => {
                     if(confirm("Remove this client from the matrix?")) {
                       setIsPending(true);
