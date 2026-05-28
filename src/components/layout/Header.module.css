@@ -167,7 +167,7 @@
   border-radius: 8px;
   z-index: 100;
   padding: 0.5rem 0;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 .dropdownContainer:hover .dropdownMenu {
   display: block;
