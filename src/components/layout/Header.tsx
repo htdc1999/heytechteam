@@ -106,6 +106,13 @@ export default function Header() {
       )}
 
       <nav className={styles.nav}>
+        <div className={styles.dropdownContainer}>
+          <span className={styles.link} style={{ cursor: 'pointer' }}>Tools</span>
+          <div className={styles.dropdownMenu}>
+            <a href="https://web-converter-production.up.railway.app/" target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>Image Converter</a>
+            <a href="https://post-generator-production-d546.up.railway.app/" target="_blank" rel="noopener noreferrer" className={styles.dropdownItem}>GBP Post Writer</a>
+          </div>
+        </div>
         <Link href="/clients" className={styles.link}>Clients</Link>
         <Link href="/history" className={styles.link}>Change History</Link>
         <button onClick={toggleTheme} className={styles.iconBtn} aria-label="Toggle Dark Mode">

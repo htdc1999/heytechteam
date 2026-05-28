@@ -1,0 +1,67 @@
+# Image Conversion Tool with Metadata Editing
+
+This plan outlines the architecture and implementation for an image converter tool that strictly converts WebP and AVIF formats into PNG, whilst allowing the addition of custom metadata and geotag coordinates.
+
+## User Review Required
+
+> [!IMPORTANT]  
+> The proposed architecture relies on a **Node.js backend** for robust metadata manipulation, as standard web browsers do not have built-in support to cleanly inject EXIF/Geotag data into PNG files. 
+> Does a Local Web Application (Vite/React frontend + Express/Node.js backend) fit your use-case for this tool?
+
+## Proposed Architecture
+
+This system will be split into a beautiful, dynamic Frontend UI and a powerful Backend.
+
+### 1. Frontend (Vite + React)
+- Focus heavily on **Premium Design Aesthetics**: Dark mode by default, glassmorphism elements, CSS-based animations, and vibrant accent colors to make the tool look incredibly alive.
+- Handles user uploads of `.webp` and `.avif` files.
+- Provides a form for setting EXIF data like:
+  - Description / Title
+  - Author / Copyright
+  - Geotag Coordinates (Latitude, Longitude)
+- Submits form data and images to the backend API.
+- Reusable glassmorphic UI components.
+
+### 2. Backend (Node.js + Express)
+- Uses `multer` for handling multipart/form-data picture uploads.
+- Uses `sharp` to transcode WebP/AVIF to PNG format beautifully.
+- Uses `exiftool-vendored` to accurately embed proper EXIF and XMP metadata (including GPS coordinates) into the resulting PNG chunks.
+- Returns the final image(s) as a downloadable blob/file to the user.
+
+---
+
+## Proposed Changes
+
+We will create a new directory inside your working directory named `Image-Converter-Tool`.
+
+### Project Structure
+
+#### [NEW] `Image-Converter-Tool/frontend`
+- Bootstrapped via `npx create-vite@latest frontend --template react`
+- **`src/App.jsx`**: Main logic and glass-panel layout component.
+- **`src/index.css`**: Core design system, modern gradients (e.g., using colors like `#2a0845` to `#6441A5`), Google Fonts (Inter), and dynamic animations.
+- **`src/components/UploadZone.jsx`**: Interactive drag-and-drop zone.
+- **`src/components/MetadataForm.jsx`**: Inputs for metadata settings. 
+
+#### [NEW] `Image-Converter-Tool/backend`
+- Bootstrapped via `npm init -y`
+- **`server.js`**: Express server initializing the `/api/convert` endpoint.
+- **`package.json`**: Requirements including `express`, `multer`, `cors`, `sharp`, and `exiftool-vendored`.
+
+## Open Questions
+
+> [!WARNING]  
+> 1. Would you prefer a completely standalone Python-GUI app instead of a web app if you wish to run it offline without managing node servers? (A Vite + React + Node.js setup requires running a backend script to work locally).
+> 2. Are there any other specific metadata fields you would like to support aside from basic tags and Geotagging?
+
+## Verification Plan
+
+### Automated Tests
+- Server starts cleanly.
+- `sharp` properly decodes test WebP and AVIF files.
+- `exiftool-vendored` properly confirms new PNG metadata entries.
+
+### Manual Verification
+- We will start the development servers and use a WebP test image to convert to PNG.
+- We will confirm that the returned image has a `.png` extension and its geotags accurately pull up a map location using an Exif Checker.
+- Ensure the UI design exhibits high-quality, modern aesthetics without standard HTML defaults.

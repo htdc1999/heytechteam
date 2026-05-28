@@ -1,0 +1,6 @@
+{
+  "artifactType": "ARTIFACT_TYPE_WALKTHROUGH",
+  "summary": "Walkthrough encompassing the massive standalone-to-frontend translation effort. Covers the advanced custom chunk-injection technique created to eliminate the necessity for backend frameworks.",
+  "updatedAt": "2026-04-21T18:49:26.325925500Z",
+  "version": "2"
+}

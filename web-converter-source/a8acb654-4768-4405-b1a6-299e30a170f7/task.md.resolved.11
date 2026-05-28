@@ -1,0 +1,5 @@
+# Task Board: 5MB Auto-Compress Engine
+
+- `[/]` Update `App.jsx` to introduce `autoCompress5MB` state and checkbox.
+- `[ ]` Refactor `ImageProcessor.js` to iteratively compress/shrink image if `autoCompress5MB` is true.
+- `[ ]` Recompile the application.
