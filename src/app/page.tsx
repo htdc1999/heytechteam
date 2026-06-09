@@ -48,7 +48,8 @@ export default async function Home() {
     const hasGbpTasks = c.onboardingTasks && c.onboardingTasks.some((t: any) => 
        t.taskName.includes("GBP") || t.taskName.includes("BrightLocal") || t.taskName.includes("Brightlocal")
     );
-    if (!hasGbpTasks) return;
+    // If they explicitly have a scheduled date, they are an active GBP client even if their onboarding tasks are gone.
+    if (!hasGbpTasks && !c.gbpPostsScheduledUntil) return;
 
     let sortValue = 0;
     let badgeText = "";
