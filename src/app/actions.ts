@@ -56,7 +56,8 @@ export async function bulkAddClients(textLines: string) {
     "Add Client To BrightLocal",
     "Submit Brightlocal Citation Builder Campaign",
     "Begin Scheduling GBP Posts On Brightlocal",
-    "Add Client To HeyTony Audit Tool"
+    "Add Client To HeyTony Audit Tool",
+      "Checked / Added llms.txt file"
   ];
 
   for (const name of lines) {
@@ -195,7 +196,8 @@ export async function seedDefaultTasks(clientId: string) {
     "Add Client To BrightLocal",
     "Submit Brightlocal Citation Builder Campaign",
     "Begin Scheduling GBP Posts On Brightlocal",
-    "Add Client To HeyTony Audit Tool"
+    "Add Client To HeyTony Audit Tool",
+      "Checked / Added llms.txt file"
   ];
 
   for (const taskName of defaultTasks) {
