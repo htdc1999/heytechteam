@@ -1,8 +1,0 @@
-# Task Board: Standalone Image Converter
-
-- `[x]` Create environment directory (`Image-Converter`)
-- `[/]` Define `requirements.txt`
-- `[ ]` Write `converter.py` logic (Geotags + WebP/AVIF -> PNG conversion)
-- `[ ]` Write `app.py` (CustomTkinter interface)
-- `[ ]` Install requirements via pip
-- `[ ]` Verify conversion and Exif correctness

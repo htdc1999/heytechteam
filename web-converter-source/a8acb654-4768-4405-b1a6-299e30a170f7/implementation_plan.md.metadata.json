@@ -1,7 +1,0 @@
-{
-  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
-  "summary":  "Plan to adjust auto-compression threshold and present options to bypass browser multi-download limits.",
-  "updatedAt":  "2026-05-12T15:07:13.973503500Z",
-  "version":  "6",
-  "requestFeedback":  true
-}
