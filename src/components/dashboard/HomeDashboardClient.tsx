@@ -11,7 +11,7 @@ import {
   addGlobalEmailTemplate, deleteGlobalEmailTemplate,
   addGlobalGoogleAdsClient, deleteGlobalGoogleAdsClient, updateGlobalGoogleAdsClient
 } from "@/app/actions";
-import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X } from "lucide-react";
+import { Edit2, Save, Trash2, Plus, GripVertical, AlertTriangle, Info, X, Copy } from "lucide-react";
 import Editor from "@/components/layout/Editor";
 import styles from "./HomeDashboardClient.module.css";
 
@@ -281,6 +281,22 @@ export default function HomeDashboardClient({
                 <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
                 <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <button onClick={() => {
+                       let text = "";
+                       const names = (doc.clientNames || "").split('\n').map(s => s.trim()).filter(Boolean);
+                       const emails = (doc.clientEmails || "").split('\n').map(s => s.trim()).filter(Boolean);
+                       const max = Math.max(names.length, emails.length);
+                       for (let i = 0; i < max; i++) {
+                           if (names[i]) text += names[i] + "\n";
+                           if (emails[i]) text += emails[i] + "\n";
+                       }
+                       if (text) {
+                           navigator.clipboard.writeText(text.trim());
+                           alert("Copied to clipboard!");
+                       } else {
+                           alert("No names or emails to copy.");
+                       }
+                    }} className={styles.iconBtn} title="Copy Names & Emails" style={{ marginRight: '8px' }}><Copy size={16}/></button>
+                    <button onClick={() => {
                      setEditAdsTitle(doc.title || "");
                      setEditAdsLink(doc.link || "");
                      setEditAdsClientNames(doc.clientNames || "");

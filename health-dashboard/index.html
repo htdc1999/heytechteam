@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Dashboard</title>
+    <!-- Use Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="dark-mode">
+    
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>HealthBoard</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="#"><i class="fa-solid fa-book-journal-whills"></i> Journal</a></li>
+                <li><a href="#"><i class="fa-solid fa-compass"></i> Browse</a></li>
+                <li><a href="#"><i class="fa-solid fa-user"></i> Profile</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1>Today's Activity</h1>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Theme">
+                        <i class="fa-solid fa-sun light-icon"></i>
+                        <i class="fa-solid fa-moon dark-icon"></i>
+                    </button>
+                    <div class="user-avatar">
+                        <img src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" alt="User Avatar">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Rings Section -->
+            <section class="rings-section">
+                <div class="ring-container">
+                    <!-- Steps Ring -->
+                    <div class="circular-progress steps-ring" data-target="7500" data-max="10000">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="progress-ring__background" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle class="progress-ring__circle" stroke-width="10" stroke-linecap="round" fill="transparent" r="50" cx="60" cy="60"/>
+                        </svg>
+                        <div class="inner-circle">
+                            <i class="fa-solid fa-shoe-prints ring-icon" style="color: var(--steps-color)"></i>
+                            <div class="ring-value" id="steps-val">0</div>
+                            <div class="ring-label">Steps</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Heart Points Ring -->
+                    <div class="circular-progress heart-ring" data-target="45" data-max="60">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="progress-ring__background" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle class="progress-ring__circle" stroke-width="10" stroke-linecap="round" fill="transparent" r="50" cx="60" cy="60"/>
+                        </svg>
+                        <div class="inner-circle">
+                            <i class="fa-solid fa-heart ring-icon" style="color: var(--heart-color)"></i>
+                            <div class="ring-value" id="heart-val">0</div>
+                            <div class="ring-label">Pts</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="rings-summary">
+                    <h2>Great job!</h2>
+                    <p>You're on track to hit your daily goals.</p>
+                </div>
+            </section>
+
+            <!-- Health Metrics Grid -->
+            <section class="metrics-grid">
+                
+                <div class="metric-card sleep-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fa-solid fa-moon"></i></div>
+                        <h3>Sleep</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="primary-val">7h 15m</div>
+                        <div class="secondary-val">Score: 82 <span class="trend up"><i class="fa-solid fa-arrow-up"></i></span></div>
+                    </div>
+                </div>
+
+                <div class="metric-card hr-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fa-solid fa-heart-crack"></i></div>
+                        <h3>Heart Rate</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="primary-val">68 bpm</div>
+                        <div class="secondary-val">Resting</div>
+                    </div>
+                </div>
+
+                <div class="metric-card weight-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fa-solid fa-weight-scale"></i></div>
+                        <h3>Weight</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="primary-val">165.2 lbs</div>
+                        <div class="secondary-val">-0.5 lbs this week</div>
+                    </div>
+                </div>
+
+                <div class="metric-card energy-card">
+                    <div class="card-header">
+                        <div class="card-icon"><i class="fa-solid fa-fire"></i></div>
+                        <h3>Energy Expended</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="primary-val">1,850 cal</div>
+                        <div class="secondary-val">Total burned</div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
