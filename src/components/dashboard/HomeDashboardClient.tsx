@@ -281,22 +281,6 @@ export default function HomeDashboardClient({
                 <td><Link href={doc.link} target="_blank" className={styles.externalLink}>Open Link</Link></td>
                 <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <button onClick={() => {
-                       let text = "";
-                       const names = (doc.clientNames || "").split('\n').map((s:string) => s.trim()).filter(Boolean);
-                       const emails = (doc.clientEmails || "").split('\n').map((s:string) => s.trim()).filter(Boolean);
-                       const max = Math.max(names.length, emails.length);
-                       for (let i = 0; i < max; i++) {
-                           if (names[i]) text += names[i] + "\n";
-                           if (emails[i]) text += emails[i] + "\n";
-                       }
-                       if (text) {
-                           navigator.clipboard.writeText(text.trim());
-                           alert("Copied to clipboard!");
-                       } else {
-                           alert("No names or emails to copy.");
-                       }
-                    }} className={styles.iconBtn} title="Copy Names & Emails" style={{ marginRight: '8px' }}><Copy size={16}/></button>
-                    <button onClick={() => {
                      setEditAdsTitle(doc.title || "");
                      setEditAdsLink(doc.link || "");
                      setEditAdsClientNames(doc.clientNames || "");
@@ -336,13 +320,27 @@ export default function HomeDashboardClient({
                      <div className={styles.modalBody}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
                            <div>
-                              <h4 style={{ color: 'var(--primary)', margin: '0 0 0.5rem 0' }}>Client Names</h4>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 0 0.5rem 0' }}>
+                                   <h4 style={{ color: 'var(--primary)', margin: 0 }}>Client Names</h4>
+                                   {activeDoc.clientNames && (
+                                     <button onClick={() => {
+                                        navigator.clipboard.writeText(activeDoc.clientNames);
+                                     }} className={styles.iconBtn} title="Copy Names" style={{ padding: 0 }}><Copy size={16}/></button>
+                                   )}
+                                </div>
                               <div className={styles.infoBox}>
                                  {activeDoc.clientNames ? activeDoc.clientNames.split('\n').map((n:string, i:number) => n.trim() && <div key={i}>{n}</div>) : <em style={{opacity:0.5}}>None tracked</em>}
                               </div>
                            </div>
                            <div>
-                              <h4 style={{ color: 'var(--primary)', margin: '0 0 0.5rem 0' }}>Emails</h4>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 0 0.5rem 0' }}>
+                                   <h4 style={{ color: 'var(--primary)', margin: 0 }}>Emails</h4>
+                                   {activeDoc.clientEmails && (
+                                     <button onClick={() => {
+                                        navigator.clipboard.writeText(activeDoc.clientEmails);
+                                     }} className={styles.iconBtn} title="Copy Emails" style={{ padding: 0 }}><Copy size={16}/></button>
+                                   )}
+                                </div>
                               <div className={styles.infoBox}>
                                  {activeDoc.clientEmails ? activeDoc.clientEmails.split('\n').map((e:string, i:number) => e.trim() && <div key={i}>{e}</div>) : <em style={{opacity:0.5}}>None tracked</em>}
                               </div>
