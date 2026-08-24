@@ -282,8 +282,8 @@ export default function HomeDashboardClient({
                 <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                   <button onClick={() => {
                        let text = "";
-                       const names = (doc.clientNames || "").split('\n').map(s => s.trim()).filter(Boolean);
-                       const emails = (doc.clientEmails || "").split('\n').map(s => s.trim()).filter(Boolean);
+                       const names = (doc.clientNames || "").split('\n').map((s:string) => s.trim()).filter(Boolean);
+                       const emails = (doc.clientEmails || "").split('\n').map((s:string) => s.trim()).filter(Boolean);
                        const max = Math.max(names.length, emails.length);
                        for (let i = 0; i < max; i++) {
                            if (names[i]) text += names[i] + "\n";
